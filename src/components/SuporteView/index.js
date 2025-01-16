@@ -11,36 +11,43 @@ const SuporteView = ({ user }) => {
     // Função para lidar com o evento de atualizar suporte
     useEffect(() => {
         socket.on('atualizar_suporte', (response) => {
-            
-            if (response.action === "abrir") {
-                // Quando a ação for "abrir", adiciona o novo chamado na tabela
-                const novoChamado = response.chamado.gerarSuporte;
-                setChamados((prevChamados) => [
-                    ...prevChamados,
-                    {
-                        id: novoChamado.id_suporte,
-                        horaInicio: novoChamado.hora_solicitacao_suporte,
-                        fila: novoChamado.fila,
-                        loginOperador: novoChamado.login,
-                        status: "pendente", // Status inicial
-                    }
-                ]);
-            } else if (response.action === "atender") {
-                // Quando a ação for "atender", atualiza o status do chamado para "em atendimento"
-                const idChamadoAtendido = response.chamado.id_suporte;
-                setChamados((prevChamados) =>
-                    prevChamados.map((chamado) =>
-                        chamado.id === idChamadoAtendido
-                            ? { ...chamado, status: "em atendimento" }
-                            : chamado
-                    )
-                );
-            } else if (response.action === "cancelar") {
-                // Quando a ação for "cancelar", remove o chamado da tabela
-                const idChamadoCancelado = response.chamado.id_suporte;
-                setChamados((prevChamados) =>
-                    prevChamados.filter((chamado) => chamado.id !== idChamadoCancelado)
-                );
+            if (response.chamado.message === "Erro em localizar os dados na request 2cx") {
+                return;
+            }
+
+            try {
+                if (response.action === "abrir") {
+                    // Quando a ação for "abrir", adiciona o novo chamado na tabela
+                    const novoChamado = response.chamado.gerarSuporte;
+                    setChamados((prevChamados) => [
+                        ...prevChamados,
+                        {
+                            id: novoChamado.id_suporte,
+                            horaInicio: novoChamado.hora_solicitacao_suporte,
+                            fila: novoChamado.fila,
+                            loginOperador: novoChamado.login,
+                            status: "pendente", // Status inicial
+                        }
+                    ]);
+                } else if (response.action === "atender") {
+                    // Quando a ação for "atender", atualiza o status do chamado para "em atendimento"
+                    const idChamadoAtendido = response.chamado.id_suporte;
+                    setChamados((prevChamados) =>
+                        prevChamados.map((chamado) =>
+                            chamado.id === idChamadoAtendido
+                                ? { ...chamado, status: "em atendimento" }
+                                : chamado
+                        )
+                    );
+                } else if (response.action === "cancelar") {
+                    // Quando a ação for "cancelar", remove o chamado da tabela
+                    const idChamadoCancelado = response.chamado.id_suporte;
+                    setChamados((prevChamados) =>
+                        prevChamados.filter((chamado) => chamado.id !== idChamadoCancelado)
+                    );
+                }
+            } catch (error) {
+
             }
         });
 
