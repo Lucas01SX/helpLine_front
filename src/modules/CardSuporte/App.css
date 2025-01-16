@@ -1,0 +1,57 @@
+@keyframes piscando {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.cardOperador{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.suporte-card {
+    width: 30%;
+    background-color: #022954;
+    padding: 20px;
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.suporte-card span{
+    margin: 1%;
+}
+
+.btn-danger {
+    width: 100%;
+    padding: 10px;
+    background-color: #FF793C;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: fit-content;
+    margin: 1%;
+}
+
+.btn-danger:hover {
+    background-color: #ff9e6b;
+}
+.em-atendimento {
+    font-size: 16px;
+    color: #ff9e6b;
+    font-weight: bold;
+    margin-top: 1%;
+}

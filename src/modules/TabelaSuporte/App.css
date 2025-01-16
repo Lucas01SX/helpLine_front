@@ -1,0 +1,86 @@
+/* Container da tabela para adicionar o scroll */
+.tabela-container {
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    width: 80%;
+}
+
+/* Estilo para a tabela */
+.tabela-suporte {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #343a40;
+    color: #f8f9fa;
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Cabeçalho da tabela */
+.tabela-suporte th {
+    background-color: #495057;
+    color: #ffffff;
+    text-align: left;
+    padding: 12px;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Indicadores de ordenação */
+.tabela-suporte th.asc::after {
+    content: ' ▲';
+    font-size: 12px;
+    position: absolute;
+    right: 10px;
+    color: #ffffff;
+}
+
+.tabela-suporte th.desc::after {
+    content: ' ▼';
+    font-size: 12px;
+    position: absolute;
+    right: 10px;
+    color: #ffffff;
+}
+
+/* Corpo da tabela */
+.tabela-suporte td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Estilo para as linhas alternadas */
+.tabela-suporte tr:nth-child(even) {
+    background-color: #3e444a;
+}
+
+/* Efeito hover */
+.tabela-suporte tr:hover {
+    background-color: #495057;
+    cursor: pointer;
+}
+
+/* Botão de ação */
+.tabela-suporte .btn-atender {
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.tabela-suporte .btn-atender:hover {
+    background-color: #218838;
+}
+
+/* Estilo para o botão em atendimento */
+.tabela-suporte .btn-atender.danger {
+    background-color: #ff9800;
+    color: white;
+}
