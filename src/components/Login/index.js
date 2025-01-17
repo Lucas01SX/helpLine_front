@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext'; // Ajuste o caminho para o local correto
 import { useNavigate } from 'react-router-dom'; // Hook para navegação
 import './App.css';
+import socket from '../../context/Socket'
 
 const Login = () => {
     const [matricula, setMatricula] = useState('');
@@ -72,6 +73,7 @@ const Login = () => {
             }
             else if (data.message === 'Autenticação bem-sucedida!') {
                 login(data.user);
+                socket.connect();
                 navigate('/home');
             } else {
                 setErro(data.message)

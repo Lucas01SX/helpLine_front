@@ -1,15 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';  // Importando o hook useAuth
+import { useAuth } from '../../context/AuthContext';
 import './App.css';
+import socket from '../../context/Socket';
 
 const Header = () => {
     const { user, logout } = useAuth();  // Obtendo os dados do usuário logado e a função de logout
     const navigate = useNavigate();
 
     const handleLogout = () => {
+        socket.disconnect();
         logout();  // Limpar o usuário do contexto
-        navigate('/');  // Redirecionar para a página de login
+        navigate('/');
     };
 
     return (
