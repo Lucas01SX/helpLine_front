@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { CFormSelect, CButton, CSpinner, CForm } from '@coreui/react';
 import CardSuporte from '../../modules/CardSuporte';
 import Icon from '../../assets/img/central-de-ajuda.png';
@@ -59,7 +59,7 @@ const OperadorView = ({ user }) => {
                     } else if (response.action === 'atender') {
                         console.log('Chamado atendido');
                         setBotaoCancelarDesabilitado(true); // Substitui o botão por "Em Atendimento"
-                    }else{
+                    } else {
                         console.log(response)
                     }
                 }
@@ -141,7 +141,7 @@ const OperadorView = ({ user }) => {
     };
 
     // Calcula o tempo de espera para exibição no card
-    const calcularTempoEspera = () => {
+    const calcularTempoEspera = useCallback(() => {
         if (!suporte) return '00:00:00';
         const agora = new Date();
         const inicio = new Date(suporte.horaInicio);
@@ -152,7 +152,7 @@ const OperadorView = ({ user }) => {
         const segundos = String(diferenca % 60).padStart(2, '0');
 
         return `${horas}:${minutos}:${segundos}`;
-    };
+    }, [suporte]); // Memorize a função com base em 'suporte'
 
     // Atualiza o tempo de espera a cada segundo
     useEffect(() => {
@@ -167,7 +167,7 @@ const OperadorView = ({ user }) => {
         return () => {
             clearInterval(intervalId);
         };
-    }, [cardVisivel]);
+    }, [cardVisivel, calcularTempoEspera]);
 
     return (
         <div className="operador-view">
@@ -198,7 +198,16 @@ const OperadorView = ({ user }) => {
                         disabled={!filaSelecionada || loading || erroFilas}
                         className="filaSelect"
                     >
-                        {loading ? <CSpinner size="sm" /> : 'Solicitar Suporte'}
+                        {loading ? <CSpinner size="sm" /> : (
+                            <>
+                                Solicitar Suporte
+                                <img
+                                    src={Icon}
+                                    alt="Icone de suporte"
+                                    style={{ width: '16px', height: '16px', marginRight: '8px' }}
+                                />
+                            </>
+                        )}
                     </CButton>
                 )}
             </div>
