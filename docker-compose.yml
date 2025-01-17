@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80" # Porta externa 3000 mapeada para o NGINX no container
+    volumes:
+      - ./src:/app/src # Monta o diretório src para facilitar desenvolvimento
+    environment:
+      - NODE_ENV=production
