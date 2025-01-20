@@ -20,7 +20,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copia os arquivos estáticos do build para o NGINX
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/build /usr/share/nginx/html/suporte
 
 # Copia o arquivo de configuração padrão do NGINX (opcional)
 EXPOSE 80
