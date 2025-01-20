@@ -2,6 +2,7 @@
   "name": "suporte",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/suporte",
   "dependencies": {
     "@coreui/coreui": "^5.2.0",
     "@coreui/icons": "^3.0.1",
