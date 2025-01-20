@@ -20,7 +20,7 @@ const OperadorView = ({ user }) => {
     useEffect(() => {
         const fetchFilas = async () => {
             try {
-                const response = await fetch('http://172.32.1.81/suporte-api/api/filas/gerais');
+                const response = await fetch('http://172.32.1.81:9002/api/filas/gerais');
                 const data = await response.json();
 
                 if (Array.isArray(data.filas)) {

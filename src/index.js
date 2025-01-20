@@ -21,7 +21,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <AuthProvider>  {/* Envolvendo com o AuthProvider */}
-      <Router basename="/suporte">
+      <Router>
         <Routes>
           {/* Página de Login sem Header */}
           <Route path="/" element={<Login />} />
