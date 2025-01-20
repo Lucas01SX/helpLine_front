@@ -27,10 +27,10 @@ const Login = () => {
 
         // Define a URL dinamicamente
         const url = isCadastro
-            ? 'http://172.32.1.81/suporte-api/api/users/create'
+            ? 'http://172.32.1.81:9002/api/users/create'
             : isUpdate
-                ? 'http://172.32.1.81/suporte-api/api/users/update'
-                : 'http://172.32.1.81/suporte-api/api/users/login';
+                ? 'http://172.32.1.81:9002/api/users/update'
+                : 'http://172.32.1.81:9002/api/users/login';
 
         const bodyData = isCadastro || isUpdate
             ? { matricula, senha, confirmarSenha }
