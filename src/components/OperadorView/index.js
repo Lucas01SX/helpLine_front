@@ -16,11 +16,16 @@ const OperadorView = ({ user }) => {
     const [cardVisivel, setCardVisivel] = useState(false); // Controle do card de suporte
     const [botaoCancelarDesabilitado, setBotaoCancelarDesabilitado] = useState(false); // Desabilitar botão "Cancelar"
 
+    const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
+    const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
+
+
     // Buscar as filas disponíveis ao carregar o componente
     useEffect(() => {
         const fetchFilas = async () => {
             try {
-                const response = await fetch('http://172.32.1.81/suporte-api/api/filas/gerais');
+
+                const response = await fetch(`${baseUrl}/suporte-api/api/filas/gerais`);
                 const data = await response.json();
 
                 if (Array.isArray(data.filas)) {

@@ -14,6 +14,10 @@ const Login = () => {
     const { login } = useAuth(); // Acessando a função de login do contexto
     const navigate = useNavigate();
 
+
+    const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
+    const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setErro('');
@@ -27,10 +31,10 @@ const Login = () => {
 
         // Define a URL dinamicamente
         const url = isCadastro
-            ? 'http://172.32.1.81/suporte-api/api/users/create'
+            ? `${baseUrl}/suporte-api/api/users/create`
             : isUpdate
-                ? 'http://172.32.1.81/suporte-api/api/users/update'
-                : 'http://172.32.1.81/suporte-api/api/users/login';
+                ? `${baseUrl}/suporte-api/api/users/update`
+                : `${baseUrl}/suporte-api/api/users/login`;
 
         const bodyData = isCadastro || isUpdate
             ? { matricula, senha, confirmarSenha }
