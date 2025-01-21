@@ -5,6 +5,8 @@ import Icon from '../../assets/img/central-de-ajuda.png';
 import './App.css';
 import socket from '../../context/Socket';
 
+const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
+const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
 const OperadorView = ({ user }) => {
     const [filas, setFilas] = useState([]);
     const [filaSelecionada, setFilaSelecionada] = useState('');
@@ -16,8 +18,6 @@ const OperadorView = ({ user }) => {
     const [cardVisivel, setCardVisivel] = useState(false); // Controle do card de suporte
     const [botaoCancelarDesabilitado, setBotaoCancelarDesabilitado] = useState(false); // Desabilitar botão "Cancelar"
 
-    const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
-    const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
 
 
     // Buscar as filas disponíveis ao carregar o componente

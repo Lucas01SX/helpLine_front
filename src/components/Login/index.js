@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom'; // Hook para navegação
 import './App.css';
 import socket from '../../context/Socket'
 
+const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
+const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
+
 const Login = () => {
     const [matricula, setMatricula] = useState('');
     const [senha, setSenha] = useState('');
@@ -15,8 +18,6 @@ const Login = () => {
     const navigate = useNavigate();
 
 
-    const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
-    const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
 
     const handleLogin = async (e) => {
         e.preventDefault();
