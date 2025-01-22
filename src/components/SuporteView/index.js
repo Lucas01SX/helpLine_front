@@ -136,14 +136,20 @@ const SuporteView = ({ user }) => {
                         ]);
                     }
                 } else if (response.action === "atender") {
-                    console.log(response)
-                    setChamados((prevChamados) =>
-                        prevChamados.map((chamado) =>
-                            chamado.id === response.chamado.suporte.id_suporte
-                                ? { ...chamado, status: "em atendimento" }
-                                : chamado
-                        )
-                    );
+                    if (response.chamado.message != "Suporte atendido com sucesso") {
+                        setChamados((prevChamados) =>
+                            prevChamados.map((chamado) =>
+                                chamado.id === response.chamado.suporte.id_suporte
+                                    ? { ...chamado, status: "em atendimento" }
+                                    : chamado
+                            )
+                        );
+                    } else if (response.chamado.message != "Chamado já está sendo atendido") {
+                        console.error("Chamado já está sendo atendido")
+                    } else {
+                        console.error("Erro não identificado.")
+                    }
+
                 } else if (response.action === "cancelar" || response.action === "finalizar") {
                     setChamados((prevChamados) =>
                         prevChamados.filter((chamado) => chamado.id !== response.chamado.suporte.id_suporte)
@@ -176,7 +182,6 @@ const SuporteView = ({ user }) => {
             tpAguardado: tempoEspera,
         },
             (response) => {
-                console.log(response)
                 if (response.suporte.matricula === user.matricula) {
                     const linkTeams = `https://teams.microsoft.com/l/call/0/0?users=${chamado.loginOperador}@corp.caixa.gov.br`;
                     window.open(linkTeams, '_blank');
