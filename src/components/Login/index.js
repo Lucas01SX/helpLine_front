@@ -4,8 +4,6 @@ import { useNavigate } from 'react-router-dom'; // Hook para navegação
 import './App.css';
 import socket from '../../context/Socket'
 
-const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
-const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
 
 const Login = () => {
     const [matricula, setMatricula] = useState('');
@@ -32,10 +30,10 @@ const Login = () => {
 
         // Define a URL dinamicamente
         const url = isCadastro
-            ? `${baseUrl}/suporte-api/api/users/create`
+            ? `create`
             : isUpdate
-                ? `${baseUrl}/suporte-api/api/users/update`
-                : `${baseUrl}/suporte-api/api/users/login`;
+                ? `update`
+                : `login_chamado`;
 
         const bodyData = isCadastro || isUpdate
             ? { matricula, senha, confirmarSenha }
@@ -43,46 +41,44 @@ const Login = () => {
 
 
         try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(bodyData),
-            });
+            socket.emit(`${url}`,
+                bodyData,
+                (response) => {
+                    console.log(response);
+                    // Tratamento de mensagens retornadas pela API
+                    if (response.message === 'Usuário não encontrado') {
+                        setErro('Usuário não cadastrado. Por favor, crie uma conta.');
+                        setIsCadastro(true);
+                    } else if (response.message === 'Usuário cadastrado com sucesso!') {
+                        setErro('Usuário cadastrado com sucesso. Faça o login.');
+                        limparCampos();
+                        setIsCadastro(false);
+                    } else if (response.message === 'Não há senha cadastrada, por gentileza cadastre sua senha!') {
+                        setErro('Por favor, crie uma senha.');
+                        setIsUpdate(true);
+                    } else if (response.message === 'Senha cadastrada com sucesso!') {
+                        setErro('Senha cadastrada com sucesso. Faça o login.');
+                        limparCampos();
+                        setIsUpdate(false);
+                    } else if (response.message === 'Senha inválida') {
+                        setErro('Senha inválida. Tente novamente.');
+                    } else if (response.message === 'As senhas não conferem, por gentileza verifique!') {
+                        setErro('As senhas não conferem, por gentileza verifique!');
+                        setSenha('');
+                        setConfirmarSenha('');
+                        return;
+                    }
+                    else if (response.message === 'Autenticação bem-sucedida!') {
+                        login(response.user);
+                        socket.connect();
+                        navigate('/home');
+                    } else {
+                        setErro(response.message)
+                    }
+                }
+            )
 
-            const data = await response.json();
 
-            // Tratamento de mensagens retornadas pela API
-            if (data.message === 'Usuário não encontrado') {
-                setErro('Usuário não cadastrado. Por favor, crie uma conta.');
-                setIsCadastro(true);
-            } else if (data.message === 'Usuário cadastrado com sucesso!') {
-                setErro('Usuário cadastrado com sucesso. Faça o login.');
-                limparCampos();
-                setIsCadastro(false);
-            } else if (data.message === 'Não há senha cadastrada, por gentileza cadastre sua senha!') {
-                setErro('Por favor, crie uma senha.');
-                setIsUpdate(true);
-            } else if (data.message === 'Senha cadastrada com sucesso!') {
-                setErro('Senha cadastrada com sucesso. Faça o login.');
-                limparCampos();
-                setIsUpdate(false);
-            } else if (data.message === 'Senha inválida') {
-                setErro('Senha inválida. Tente novamente.');
-            } else if (data.message === 'As senhas não conferem, por gentileza verifique!') {
-                setErro('As senhas não conferem, por gentileza verifique!');
-                setSenha('');
-                setConfirmarSenha('');
-                return;
-            }
-            else if (data.message === 'Autenticação bem-sucedida!') {
-                login(data.user);
-                socket.connect();
-                navigate('/home');
-            } else {
-                setErro(data.message)
-            }
         } catch (error) {
             console.error('Erro na requisição:', error);
             setErro('Erro ao conectar com o servidor.');

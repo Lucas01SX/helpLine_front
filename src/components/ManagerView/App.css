@@ -1,0 +1,22 @@
+.manager-view {
+    padding: 20px;
+}
+
+.filters {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.filter {
+    flex: 1;
+}
+
+.select {
+    min-width: 200px;
+}
+
+.error {
+    color: red;
+    margin-top: 20px;
+}

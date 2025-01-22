@@ -9,9 +9,16 @@ const Header = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        socket.disconnect();
-        logout();  // Limpar o usuário do contexto
-        navigate('/');
+        socket.emit('logoff',
+            (response) => {
+                console.log(response)
+                if (response.message === 'Logoff realizado') {
+                    logout();
+                    navigate('/');
+                }
+            }
+        )
+
     };
 
     return (
