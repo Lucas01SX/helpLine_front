@@ -136,7 +136,7 @@ const SuporteView = ({ user }) => {
                         ]);
                     }
                 } else if (response.action === "atender") {
-                    if (response.chamado.message != "Suporte atendido com sucesso") {
+                    if (response.chamado.message === "Suporte atendido com sucesso") {
                         setChamados((prevChamados) =>
                             prevChamados.map((chamado) =>
                                 chamado.id === response.chamado.suporte.id_suporte
@@ -144,7 +144,7 @@ const SuporteView = ({ user }) => {
                                     : chamado
                             )
                         );
-                    } else if (response.chamado.message != "Chamado já está sendo atendido") {
+                    } else if (response.chamado.message === "Chamado já está sendo atendido") {
                         console.error("Chamado já está sendo atendido")
                     } else {
                         console.error("Erro não identificado.")
