@@ -49,7 +49,7 @@ const OperadorView = ({ user }) => {
     useEffect(() => {
         socket.on('atualizar_suporte', (response) => {
             try {
-                if (suporte && suporte.gerarSuporte && response.chamado.id_suporte === suporte.gerarSuporte.id_suporte) {
+                if (suporte && suporte.gerarSuporte && response.chamado.suporte.id_suporte === suporte.gerarSuporte.id_suporte) {
                     if (response.action === 'abrir') {
                         console.log('Suporte solicitado');
                         setBotaoSolicitarVisivel(false); // Oculta o botão "Solicitar Suporte"

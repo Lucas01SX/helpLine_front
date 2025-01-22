@@ -136,16 +136,17 @@ const SuporteView = ({ user }) => {
                         ]);
                     }
                 } else if (response.action === "atender") {
+                    console.log(response)
                     setChamados((prevChamados) =>
                         prevChamados.map((chamado) =>
-                            chamado.id === response.chamado.id_suporte
+                            chamado.id === response.chamado.suporte.id_suporte
                                 ? { ...chamado, status: "em atendimento" }
                                 : chamado
                         )
                     );
                 } else if (response.action === "cancelar" || response.action === "finalizar") {
                     setChamados((prevChamados) =>
-                        prevChamados.filter((chamado) => chamado.id !== response.chamado.id_suporte)
+                        prevChamados.filter((chamado) => chamado.id !== response.chamado.suporte.id_suporte)
                     );
                 }
             } catch (error) {
