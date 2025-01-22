@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import TabelaSuporte from '../../modules/TabelaSuporte';
 import ModalSuporte from '../../modules/ModalSuporte';
 import './App.css';
@@ -12,22 +12,57 @@ const SuporteView = ({ user }) => {
     const [chamadoSelecionado, setChamadoSelecionado] = useState(null);
     const [filasHabilitadas, setFilasHabilitadas] = useState([]);
 
+    const calcularTempoEspera = useCallback((horaInicio) => {
+        if (!horaInicio) return '00:00:00'; // Verificação defensiva
+    
+        // Caso a string seja do tipo HH:mm:ss
+        if (typeof horaInicio === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(horaInicio)) {
+            const [horas, minutos, segundos] = horaInicio.split(':').map(Number);
+    
+            // Cria um objeto Date para a hora de início com base no dia atual
+            const agora = new Date();
+            const inicio = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), horas, minutos, segundos);
+    
+            const diferenca = Math.floor((agora - inicio) / 1000); // Diferença em segundos
+    
+            if (diferenca < 0) return '00:00:00'; // Evita tempos negativos
+    
+            const horasCalculadas = String(Math.floor(diferenca / 3600)).padStart(2, '0');
+            const minutosCalculados = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
+            const segundosCalculados = String(diferenca % 60).padStart(2, '0');
+    
+            return `${horasCalculadas}:${minutosCalculados}:${segundosCalculados}`;
+        }
+    
+        // Para outros formatos (ex: timestamps), tenta criar um objeto Date diretamente
+        const agora = new Date();
+        const inicio = new Date(horaInicio); // Pode falhar se o formato for inválido
+        if (isNaN(inicio)) return '00:00:00'; // Verificação defensiva
+    
+        const diferenca = Math.floor((agora - inicio) / 1000);
+    
+        const horas = String(Math.floor(diferenca / 3600)).padStart(2, '0');
+        const minutos = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
+        const segundos = String(diferenca % 60).padStart(2, '0');
+    
+        return `${horas}:${minutos}:${segundos}`;
+    }, []);
+    
+
     // Consulta as filas habilitadas para o suporte
     useEffect(() => {
         const fetchFilasHabilitadas = async () => {
             try {
                 const response = await fetch(`${baseUrl}/suporte-api/api/filas/consulta/skill`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ matricula: user.matricula }),
                 });
 
                 if (response.ok) {
                     const data = await response.json();
                     if (data.message === 'Consulta realizada com sucesso') {
-                        setFilasHabilitadas(data.filas.fila.split(',')); // Divide as filas por vírgula
+                        setFilasHabilitadas(data.filas.fila.split(','));
                     }
                 } else {
                     console.error('Erro ao carregar filas habilitadas.');
@@ -40,19 +75,20 @@ const SuporteView = ({ user }) => {
         fetchFilasHabilitadas();
     }, [user.matricula]);
 
-    // Consulta os chamados e filtra pelas filas habilitadas
+    // Consulta os chamados iniciais
     useEffect(() => {
         const consultarSuporte = () => {
             socket.emit('consultar_suporte', (response) => {
                 if (response.message === "Dados de consulta atualizados" && response.consulta) {
                     setChamados(
                         response.consulta
-                            .filter((chamado) => filasHabilitadas.includes(chamado.fila)) // Filtra pelas filas habilitadas
+                            .filter((chamado) => filasHabilitadas.includes(chamado.fila))
                             .map((chamado) => ({
                                 id: chamado.id_suporte,
                                 horaInicio: chamado.hora_solicitacao_suporte,
                                 fila: chamado.fila,
                                 loginOperador: chamado.login,
+                                tempoEspera: calcularTempoEspera(chamado.hora_solicitacao_suporte),
                             }))
                     );
                 } else {
@@ -61,16 +97,28 @@ const SuporteView = ({ user }) => {
             });
         };
 
-        // Apenas consulta suporte se as filas habilitadas estiverem carregadas
-        if (filasHabilitadas.length > 0) {
-            consultarSuporte();
-        }
-    }, [filasHabilitadas]);
+        if (filasHabilitadas.length > 0) consultarSuporte();
+    }, [filasHabilitadas,calcularTempoEspera]);
 
+    // Atualiza o tempo de espera a cada 1 segundo
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setChamados((prevChamados) =>
+                prevChamados.map((chamado) => ({
+                    ...chamado,
+                    tempoEspera: calcularTempoEspera(chamado.horaInicio),
+                }))
+            );
+        }, 1000);
+
+        return () => clearInterval(interval); // Limpeza ao desmontar
+    }, [calcularTempoEspera]);
+
+    // Atualizações em tempo real
     useEffect(() => {
         socket.on('atualizar_suporte', (response) => {
             if (response.chamado.message === "Erro em localizar os dados na request 2cx") return;
-            console.log(response)
+
             try {
                 if (response.action === "abrir") {
                     const novoChamado = response.chamado.gerarSuporte;
@@ -83,27 +131,21 @@ const SuporteView = ({ user }) => {
                                 fila: novoChamado.fila,
                                 loginOperador: novoChamado.login,
                                 status: "pendente",
+                                tempoEspera: calcularTempoEspera(novoChamado.hora_solicitacao_suporte),
                             },
                         ]);
                     }
                 } else if (response.action === "atender") {
-                    const idChamadoAtendido = response.chamado.id_suporte;
                     setChamados((prevChamados) =>
                         prevChamados.map((chamado) =>
-                            chamado.id === idChamadoAtendido
+                            chamado.id === response.chamado.id_suporte
                                 ? { ...chamado, status: "em atendimento" }
                                 : chamado
                         )
                     );
-                } else if (response.action === "cancelar") {
-                    const idChamadoCancelado = response.chamado.id_suporte;
+                } else if (response.action === "cancelar" || response.action === "finalizar") {
                     setChamados((prevChamados) =>
-                        prevChamados.filter((chamado) => chamado.id !== idChamadoCancelado)
-                    );
-                } else if (response.action === 'finalizar') {
-                    const idChamadoFinalizado = response.chamado.id_suporte;
-                    setChamados((prevChamados) =>
-                        prevChamados.filter((chamado) => chamado.id !== idChamadoFinalizado)
+                        prevChamados.filter((chamado) => chamado.id !== response.chamado.id_suporte)
                     );
                 }
             } catch (error) {
@@ -114,7 +156,7 @@ const SuporteView = ({ user }) => {
         return () => {
             socket.removeListener('atualizar_suporte');
         };
-    }, [filasHabilitadas]);
+    }, [filasHabilitadas,calcularTempoEspera]);
 
     const handleAtenderSuporte = (idChamado) => {
         const chamado = chamados.find((ch) => ch.id === idChamado);
@@ -123,13 +165,8 @@ const SuporteView = ({ user }) => {
         const now = new Date();
         const date = now.toISOString().split('T')[0];
         const hora = now.toTimeString().split(' ')[0];
-
-        const [hours, minutes, seconds] = chamado.horaInicio.split(':').map(Number);
-        const inicio = new Date(now);
-        inicio.setHours(hours, minutes, seconds, 0);
-
-        const diferencaSegundos = Math.floor((now - inicio) / 1000);
-        const tempoEspera = new Date(diferencaSegundos * 1000).toISOString().substr(11, 8);
+        console.log(typeof(chamado.horaInicio))
+        const tempoEspera = calcularTempoEspera(chamado.horaInicio);
 
         socket.emit('atender_chamado', {
             idSuporte: chamado.id,
@@ -138,6 +175,8 @@ const SuporteView = ({ user }) => {
             hrSuporte: hora,
             tpAguardado: tempoEspera,
         });
+
+        console.log(date, hora, tempoEspera)
 
         const linkTeams = `https://teams.microsoft.com/l/call/0/0?users=${chamado.loginOperador}@corp.caixa.gov.br`;
         window.open(linkTeams, '_blank');
