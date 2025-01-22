@@ -48,30 +48,29 @@ const OperadorView = ({ user }) => {
     // Gerenciar eventos recebidos do socket
     useEffect(() => {
         socket.on('atualizar_suporte', (response) => {
-            try {
-                if (suporte && suporte.gerarSuporte && response.chamado.suporte.id_suporte === suporte.gerarSuporte.id_suporte) {
-                    if (response.action === 'abrir') {
-                        console.log('Suporte solicitado');
-                        setBotaoSolicitarVisivel(false); // Oculta o botão "Solicitar Suporte"
-                        setCardVisivel(true); // Exibe o card de suporte
-                        setBotaoCancelarDesabilitado(false)
-                    } else if (response.action === 'finalizar') {
-                        console.log('Suporte finalizado');
-                        setSuporte(null);
-                        setBotaoSolicitarVisivel(true); // Reexibe o botão "Solicitar Suporte"
-                        setCardVisivel(false); // Oculta o card de suporte
-                        setBotaoCancelarDesabilitado(false)
-                    } else if (response.action === 'atender') {
-                        console.log('Chamado atendido');
-                        setBotaoCancelarDesabilitado(true); // Substitui o botão por "Em Atendimento"
-                    } else {
-                        console.log(response)
+            if (response.action === 'finalizar') {
+                console.log('Suporte finalizado');
+                setSuporte(null);
+                setBotaoSolicitarVisivel(true); // Reexibe o botão "Solicitar Suporte"
+                setCardVisivel(false); // Oculta o card de suporte
+                setBotaoCancelarDesabilitado(false)
+            } else if (response.action === 'atender') {
+                console.log('Chamado atendido');
+                setBotaoCancelarDesabilitado(true); // Substitui o botão por "Em Atendimento"
+            } else {
+                try {
+                    if (suporte && suporte.gerarSuporte && response.chamado.gerarSuporte.id_suporte === suporte.gerarSuporte.id_suporte) {
+                        if (response.action === 'abrir') {
+                            console.log('Suporte solicitado');
+                            setBotaoSolicitarVisivel(false); // Oculta o botão "Solicitar Suporte"
+                            setCardVisivel(true); // Exibe o card de suporte
+                            setBotaoCancelarDesabilitado(false)
+                        }
                     }
+                } catch (error) {
+                    console.error(error)
                 }
-            } catch (error) {
-                console.error(error)
             }
-
         });
 
         return () => {
@@ -110,6 +109,7 @@ const OperadorView = ({ user }) => {
                         setBotaoSolicitarVisivel(false);
                         setCardVisivel(true);
                     } else if (response.message === 'Erro em localizar os dados na request 2cx') {
+                        alert('Você não está em nenhuma ligação.');
                         console.error('Você não está em nenhuma ligação.');
                     }
                 }

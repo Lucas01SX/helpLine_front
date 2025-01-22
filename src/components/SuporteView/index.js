@@ -149,10 +149,9 @@ const SuporteView = ({ user }) => {
                     } else {
                         console.error("Erro não identificado.")
                     }
-
                 } else if (response.action === "cancelar" || response.action === "finalizar") {
                     setChamados((prevChamados) =>
-                        prevChamados.filter((chamado) => chamado.id !== response.chamado.suporte.id_suporte)
+                        prevChamados.filter((chamado) => chamado.id !== response.chamado.id_suporte)
                     );
                 }
             } catch (error) {
