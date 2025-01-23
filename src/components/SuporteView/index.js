@@ -4,10 +4,7 @@ import ModalSuporte from '../../modules/ModalSuporte';
 import './App.css';
 import socket from '../../context/Socket';
 
-const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
-const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
-
-const SuporteView = ({ user }) => {
+const SuporteView = ({ user, baseUrl }) => {
     const [chamados, setChamados] = useState([]);
     const [chamadoSelecionado, setChamadoSelecionado] = useState(null);
     const [filasHabilitadas, setFilasHabilitadas] = useState([]);
@@ -73,7 +70,7 @@ const SuporteView = ({ user }) => {
         };
 
         fetchFilasHabilitadas();
-    }, [user.matricula]);
+    }, [user.matricula, baseUrl]);
 
     // Consulta os chamados iniciais
     useEffect(() => {

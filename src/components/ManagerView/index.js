@@ -4,10 +4,10 @@ import socket from '../../context/Socket';
 import Select from 'react-select';
 import TabelaManager from '../../modules/TabelaManager';
 
-const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
-const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
 
-const ManagerView = () => {
+
+const ManagerView = ({user, baseUrl}) => {
+
     const [usuariosLogados, setUsuariosLogados] = useState([]);
     const [filas, setFilas] = useState([]);
     const [segmentosSelecionados, setSegmentosSelecionados] = useState([]);
@@ -34,7 +34,7 @@ const ManagerView = () => {
         };
 
         fetchFilas();
-    }, []);
+    }, [baseUrl]);
 
     // Atualizar lista de usuários logados em tempo real
     useEffect(() => {
@@ -81,12 +81,10 @@ const ManagerView = () => {
 
     return (
         <div className="manager-view">
-            <h1>Usuários Logados</h1>
 
             {/* Filtros de Segmento e Fila */}
             <div className="filters">
                 <div className="filter">
-                    <h3>Segmentos</h3>
                     <Select
                         options={segmentosOptions}
                         isMulti
@@ -98,7 +96,6 @@ const ManagerView = () => {
                 </div>
 
                 <div className="filter">
-                    <h3>Filas</h3>
                     <Select
                         options={filasOptions}
                         isMulti

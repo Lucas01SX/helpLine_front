@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { CFormSelect, CButton, CSpinner, CForm } from '@coreui/react';
+import { CFormSelect, CButton, CForm } from '@coreui/react';
 import CardSuporte from '../../modules/CardSuporte';
 import Icon from '../../assets/img/central-de-ajuda.png';
 import './App.css';
 import socket from '../../context/Socket';
 
-const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
-const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
-const OperadorView = ({ user }) => {
+
+const OperadorView = ({ user, baseUrl }) => {
     const [filas, setFilas] = useState([]);
     const [filaSelecionada, setFilaSelecionada] = useState('');
     const [suporte, setSuporte] = useState(null); // Dados do suporte ativo
-    const [loading, setLoading] = useState(false);
     const [erroFilas, setErroFilas] = useState(false);
     const [tempoEspera, setTempoEspera] = useState('00:00:00');
     const [botaoSolicitarVisivel, setBotaoSolicitarVisivel] = useState(true); // Controle do botão "Solicitar Suporte"
@@ -43,7 +41,7 @@ const OperadorView = ({ user }) => {
         };
 
         fetchFilas();
-    }, []);
+    }, [baseUrl]);
 
     // Gerenciar eventos recebidos do socket
     useEffect(() => {
@@ -82,7 +80,8 @@ const OperadorView = ({ user }) => {
     const handleSolicitarSuporte = async () => {
         if (!filaSelecionada) return;
 
-        setLoading(true);
+
+        setBotaoSolicitarVisivel(false)
         try {
             const now = new Date();
             const date = now.toISOString().split('T')[0];
@@ -111,13 +110,12 @@ const OperadorView = ({ user }) => {
                     } else if (response.message === 'Erro em localizar os dados na request 2cx') {
                         alert('Você não está em nenhuma ligação.');
                         console.error('Você não está em nenhuma ligação.');
+                        setBotaoSolicitarVisivel(true)
                     }
                 }
             );
         } catch (error) {
             console.error('Erro ao solicitar suporte:', error);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -186,7 +184,7 @@ const OperadorView = ({ user }) => {
                 <CFormSelect
                     aria-label="Selecione a fila"
                     onChange={(e) => setFilaSelecionada(e.target.value)}
-                    disabled={loading || erroFilas || !botaoSolicitarVisivel}
+                    disabled={erroFilas || !botaoSolicitarVisivel}
                     className="selectFilaOperador"
                 >
                     <option value="">Selecione uma fila</option>
@@ -200,19 +198,15 @@ const OperadorView = ({ user }) => {
                 {botaoSolicitarVisivel && (
                     <CButton
                         onClick={handleSolicitarSuporte}
-                        disabled={!filaSelecionada || loading || erroFilas}
+                        disabled={!filaSelecionada || erroFilas}
                         className="filaSelect"
                     >
-                        {loading ? <CSpinner size="sm" /> : (
-                            <>
-                                Solicitar Suporte
-                                <img
-                                    src={Icon}
-                                    alt="Icone de suporte"
-                                    style={{ width: '16px', height: '16px', marginRight: '8px' }}
-                                />
-                            </>
-                        )}
+                        Solicitar Suporte
+                        <img
+                            src={Icon}
+                            alt="Icone de suporte"
+                            style={{ width: '16px', height: '16px', marginLeft: '8px', verticalAlign: 'middle' }}
+                        />
                     </CButton>
                 )}
             </div>

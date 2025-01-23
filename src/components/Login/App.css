@@ -8,6 +8,12 @@
     background-color: #f9f9f9;
 }
 
+.login-container h2 {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+}
+
 .input-group {
     margin-bottom: 15px;
 }
@@ -43,4 +49,6 @@
     color: red;
     font-size: 14px;
     margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
 }

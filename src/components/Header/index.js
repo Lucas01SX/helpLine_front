@@ -12,7 +12,7 @@ const Header = () => {
         socket.emit('logoff',
             (response) => {
                 console.log(response)
-                if (response.message === 'Logoff realizado') {
+                if (response.message === 'Logoff realizado' || 'seção não encontrado') {
                     logout();
                     navigate('/');
                 }

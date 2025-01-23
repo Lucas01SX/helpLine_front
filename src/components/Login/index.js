@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext'; // Ajuste o caminho para o local correto
-import { useNavigate } from 'react-router-dom'; // Hook para navegação
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './App.css';
 import socket from '../../context/Socket'
 
@@ -102,7 +102,7 @@ const Login = () => {
             </h2>
             <form onSubmit={handleLogin}>
                 <div className="input-group">
-                    <label>Matrícula</label>
+                    <label>Matrícula Plansul</label>
                     <input
                         type="text"
                         value={matricula}
@@ -130,7 +130,7 @@ const Login = () => {
                         />
                     </div>
                 )}
-                {erro && <p className="error-message">{erro}</p>}
+                {erro && <span className="error-message">{erro}</span>}
                 <button className="btnLogin" type="submit">
                     {isCadastro
                         ? 'Cadastrar'

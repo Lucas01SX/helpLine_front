@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';  // Importando o AuthProvider
 import Header from './components/Header';
 import Login from './components/Login';
@@ -11,7 +11,7 @@ import './App.css';
 // Layout Wrapper para páginas com Header
 const Layout = ({ children }) => (
   <>
-    <Header/>
+    <Header />
     <div style={{ marginTop: '50px' }}>{children}</div> {/* Espaço abaixo do Header */}
   </>
 );
@@ -35,6 +35,9 @@ root.render(
               </Layout>
             }
           />
+
+          {/* Rota para redirecionar para "/" em caso de erro 404 */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

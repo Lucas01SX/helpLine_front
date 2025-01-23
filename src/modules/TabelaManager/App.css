@@ -13,7 +13,7 @@
 .tabela-suporte {
     width: 100%;
     border-collapse: collapse;
-    background-color: #343a40;
+    background-color: #022954;
     color: #f8f9fa;
     margin: 20px 0;
     border-radius: 8px;
@@ -22,7 +22,7 @@
 
 /* Cabeçalho da tabela */
 .tabela-suporte th {
-    background-color: #495057;
+    background-color: #022954;
     color: #ffffff;
     text-align: left;
     padding: 12px;
@@ -39,11 +39,11 @@
 
 /* Estilo para as linhas alternadas */
 .tabela-suporte tr:nth-child(even) {
-    background-color: #3c4248;
+    background-color: #022954;
 }
 
 /* Estilo para hover */
 .tabela-suporte tr:hover {
-    background-color: #495057;
+    background-color: #022954;
     cursor: pointer;
 }

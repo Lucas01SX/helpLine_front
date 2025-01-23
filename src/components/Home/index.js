@@ -9,6 +9,9 @@ import './App.css'
 const Home = () => {
     const { user } = useAuth();
 
+    const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
+    const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
+
     // Verifica se o user está disponível antes de acessar codfuncao
     if (!user) {
         return <Navigate to="/" />;  // Redireciona para a página de login
@@ -19,18 +22,17 @@ const Home = () => {
     switch (user.codfuncao) {
         case 1066:
         case 14936:
-            ComponentToRender = <OperadorView user={user} />;
+            ComponentToRender = <OperadorView user={user} baseUrl={baseUrl} />;
             break;
         case 1031:
-            ComponentToRender = <ManagerView user={user} />;
+            ComponentToRender = <ManagerView user={user} baseUrl={baseUrl} />;
             break;
         default:
-            ComponentToRender = <SuporteView user={user} />;
+            ComponentToRender = <SuporteView user={user} baseUrl={baseUrl} />;
             break;
     }
 
     return (
-        // || user.codfuncao === 1031
         <div className="home-container">
             {ComponentToRender}
         </div>
