@@ -6,7 +6,7 @@ import TabelaManager from '../../modules/TabelaManager';
 
 
 
-const ManagerView = ({user, baseUrl}) => {
+const ManagerView = ({ user, baseUrl }) => {
 
     const [usuariosLogados, setUsuariosLogados] = useState([]);
     const [filas, setFilas] = useState([]);
@@ -36,10 +36,22 @@ const ManagerView = ({user, baseUrl}) => {
         fetchFilas();
     }, [baseUrl]);
 
+
+    // Consulta os chamados iniciais
+    useEffect(() => {
+
+        socket.emit('atualizar_manager', (response) => {
+            console.log(response);
+        });
+
+
+
+    }, []);
+
     // Atualizar lista de usuários logados em tempo real
     useEffect(() => {
         socket.on('atualizar_suporte', (response) => {
-            console.log(response)
+            // console.log(response)
             // setUsuariosLogados(response);
         });
 

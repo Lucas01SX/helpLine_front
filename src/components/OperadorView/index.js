@@ -47,28 +47,31 @@ const OperadorView = ({ user, baseUrl }) => {
     // Gerenciar eventos recebidos do socket
     useEffect(() => {
         socket.on('atualizar_suporte', (response) => {
-            if (response.action === 'finalizar') {
-                console.log('Suporte finalizado');
-                setSuporte(null);
-                setBotaoSolicitarVisivel(true); // Reexibe o botão "Solicitar Suporte"
-                setCardVisivel(false); // Oculta o card de suporte
-                setBotaoCancelarDesabilitado(false)
-            } else if (response.action === 'atender') {
-                console.log('Chamado atendido');
-                setBotaoCancelarDesabilitado(true); // Substitui o botão por "Em Atendimento"
-            } else {
-                try {
-                    if (suporte && suporte.gerarSuporte && response.chamado.gerarSuporte.id_suporte === suporte.gerarSuporte.id_suporte) {
-                        if (response.action === 'abrir') {
-                            console.log('Suporte solicitado');
-                            setBotaoSolicitarVisivel(false); // Oculta o botão "Solicitar Suporte"
-                            setCardVisivel(true); // Exibe o card de suporte
-                            setBotaoCancelarDesabilitado(false)
-                        }
+            console.log(response.chamado)
+            try {
+                if (suporte && suporte.gerarSuporte && response.chamado.id_suporte === suporte.gerarSuporte.id_suporte) {
+                    if (response.action === 'finalizar') {
+                        console.log('Suporte finalizado');
+                        setSuporte(null);
+                        setBotaoSolicitarVisivel(true); // Reexibe o botão "Solicitar Suporte"
+                        setCardVisivel(false); // Oculta o card de suporte
+                        setBotaoCancelarDesabilitado(false)
                     }
-                } catch (error) {
-                    console.error(error)
+                } else if (suporte && suporte.gerarSuporte && response.chamado.suporte.id_suporte === suporte.gerarSuporte.id_suporte) {
+                    if (response.action === 'atender') {
+                        console.log('Chamado atendido');
+                        setBotaoCancelarDesabilitado(true); // Substitui o botão por "Em Atendimento"
+                    }
+                } else if (suporte && suporte.gerarSuporte && response.chamado.gerarSuporte.id_suporte === suporte.gerarSuporte.id_suporte) {
+                    if (response.action === 'abrir') {
+                        console.log('Suporte solicitado');
+                        setBotaoSolicitarVisivel(false); // Oculta o botão "Solicitar Suporte"
+                        setCardVisivel(true); // Exibe o card de suporte
+                        setBotaoCancelarDesabilitado(false)
+                    }
                 }
+            } catch (error) {
+                console.log(error)
             }
         });
 
