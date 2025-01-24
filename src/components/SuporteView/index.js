@@ -74,35 +74,31 @@ const SuporteView = ({ user, baseUrl }) => {
 
     // Consulta os chamados iniciais
     useEffect(() => {
-        const interval = setInterval(() => {
-            console.log("att")
-            const consultarSuporte = () => {
-                socket.emit('consultar_suporte', (response) => {
-                    if (response.message === "Dados de consulta atualizados" && response.consulta) {
-                        setChamados(
-                            response.consulta
-                                .filter((chamado) => filasHabilitadas.includes(chamado.fila))
-                                .map((chamado) => ({
-                                    id: chamado.id_suporte,
-                                    horaInicio: chamado.hora_solicitacao_suporte,
-                                    fila: chamado.fila,
-                                    loginOperador: chamado.login,
-                                    tempoEspera: calcularTempoEspera(chamado.hora_solicitacao_suporte),
-                                    status: 'pendente'
-                                }))
-                        );
-                    } else {
-                        console.error("Erro do backend:", response.error || "Resposta inválida");
-                    }
-                });
-            };
+        const consultarSuporte = () => {
+            socket.emit('consultar_suporte', (response) => {
+                if (response.message === "Dados de consulta atualizados" && response.consulta) {
+                    setChamados(
+                        response.consulta
+                            .filter((chamado) => filasHabilitadas.includes(chamado.fila))
+                            .map((chamado) => ({
+                                id: chamado.id_suporte,
+                                horaInicio: chamado.hora_solicitacao_suporte,
+                                fila: chamado.fila,
+                                loginOperador: chamado.login,
+                                tempoEspera: calcularTempoEspera(chamado.hora_solicitacao_suporte),
+                                status: 'pendente'
+                            }))
+                    );
+                } else {
+                    console.error("Erro do backend:", response.error || "Resposta inválida");
+                }
+            });
+        };
 
-            if (filasHabilitadas.length > 0) consultarSuporte();
-        }, 5000);
-
-        return () => clearInterval(interval);
-
+        if (filasHabilitadas.length > 0) consultarSuporte();
     }, [filasHabilitadas, calcularTempoEspera]);
+
+
 
     // Atualiza o tempo de espera a cada 1 segundo
     useEffect(() => {
