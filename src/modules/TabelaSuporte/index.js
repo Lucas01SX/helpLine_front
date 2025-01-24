@@ -3,13 +3,11 @@ import {
     createColumnHelper,
     flexRender,
     getCoreRowModel,
-    getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
 import './App.css';
 
 const TabelaSuporte = ({ chamados, onAtenderSuporte }) => {
-
     const columnHelper = createColumnHelper();
 
     // Configurar colunas
@@ -31,12 +29,12 @@ const TabelaSuporte = ({ chamados, onAtenderSuporte }) => {
             id: 'acao',
             header: 'Ação',
             cell: ({ row }) => {
-                const status = row.original.status; // Verifique se o status é "em atendimento"
+                const status = row.original.status; // Verifica se o status é "em atendimento"
                 return (
                     <button
-                        className={`btn-atender ${status === 'em atendimento' ? 'danger' : ''}`} // Adiciona a classe danger se o status for "em atendimento"
+                        className={`btn-atender ${status === 'em atendimento' ? 'danger' : ''}`}
                         onClick={() => onAtenderSuporte(row.original.id)}
-                        disabled={status === 'em atendimento'} // Desabilita o botão se o status for "em atendimento"
+                        disabled={status === 'em atendimento'}
                     >
                         {status === 'em atendimento' ? 'Em atendimento' : 'Atender'}
                     </button>
@@ -47,17 +45,32 @@ const TabelaSuporte = ({ chamados, onAtenderSuporte }) => {
 
     // Preparar os dados
     const data = React.useMemo(() => {
-        return chamados.map((chamado) => {
+        const processData = chamados.map((chamado) => {
             const agora = new Date();
             const [hora, minuto, segundo] = chamado.horaInicio.split(':').map(Number);
             const inicio = new Date(agora);
             inicio.setHours(hora, minuto, segundo, 0);
-            const diferenca = Math.floor((agora - inicio) / 1000);
+            const diferenca = Math.floor((agora - inicio) / 1000); // Tempo de espera em segundos
+
             const horas = String(Math.floor(diferenca / 3600)).padStart(2, '0');
             const minutos = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
             const segundos = String(diferenca % 60).padStart(2, '0');
 
-            return { ...chamado, tempoEspera: `${horas}:${minutos}:${segundos}` };
+            return {
+                ...chamado,
+                tempoEspera: `${horas}:${minutos}:${segundos}`,
+                tempoEsperaSegundos: diferenca, // Usado para ordenar
+            };
+        });
+
+        // Ordenar os chamados
+        return processData.sort((a, b) => {
+            // 1. Ordenar pelo status: "em atendimento" vai para o final
+            if (a.status === 'em atendimento' && b.status !== 'em atendimento') return 1;
+            if (a.status !== 'em atendimento' && b.status === 'em atendimento') return -1;
+
+            // 2. Ordenar por maior tempo de espera
+            return b.tempoEsperaSegundos - a.tempoEsperaSegundos;
         });
     }, [chamados]);
 
@@ -66,7 +79,6 @@ const TabelaSuporte = ({ chamados, onAtenderSuporte }) => {
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
     });
 
     return (
@@ -78,8 +90,13 @@ const TabelaSuporte = ({ chamados, onAtenderSuporte }) => {
                             {headerGroup.headers.map((header) => (
                                 <th
                                     key={header.id}
-                                    onClick={header.column.getToggleSortingHandler()}
-                                    className={header.column.getIsSorted() === 'asc' ? 'asc' : header.column.getIsSorted() === 'desc' ? 'desc' : ''}
+                                    className={
+                                        header.column.getIsSorted() === 'asc'
+                                            ? 'asc'
+                                            : header.column.getIsSorted() === 'desc'
+                                            ? 'desc'
+                                            : ''
+                                    }
                                 >
                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                 </th>

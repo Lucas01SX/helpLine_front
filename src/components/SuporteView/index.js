@@ -20,9 +20,9 @@ const SuporteView = ({ user, baseUrl }) => {
             const agora = new Date();
             const inicio = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), horas, minutos, segundos);
 
-            const diferenca = Math.floor((agora - inicio) / 1000); // Diferença em segundos
+            const diferenca = Math.floor((agora - inicio) / 1000);
 
-            if (diferenca < 0) return '00:00:00'; // Evita tempos negativos
+            if (diferenca < 0) return '00:00:00';
 
             const horasCalculadas = String(Math.floor(diferenca / 3600)).padStart(2, '0');
             const minutosCalculados = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
@@ -33,8 +33,8 @@ const SuporteView = ({ user, baseUrl }) => {
 
         // Para outros formatos (ex: timestamps), tenta criar um objeto Date diretamente
         const agora = new Date();
-        const inicio = new Date(horaInicio); // Pode falhar se o formato for inválido
-        if (isNaN(inicio)) return '00:00:00'; // Verificação defensiva
+        const inicio = new Date(horaInicio);
+        if (isNaN(inicio)) return '00:00:00';
 
         const diferenca = Math.floor((agora - inicio) / 1000);
 
@@ -86,6 +86,7 @@ const SuporteView = ({ user, baseUrl }) => {
                                 fila: chamado.fila,
                                 loginOperador: chamado.login,
                                 tempoEspera: calcularTempoEspera(chamado.hora_solicitacao_suporte),
+                                status: 'pendente'
                             }))
                     );
                 } else {
@@ -101,15 +102,20 @@ const SuporteView = ({ user, baseUrl }) => {
     useEffect(() => {
         const interval = setInterval(() => {
             setChamados((prevChamados) =>
-                prevChamados.map((chamado) => ({
-                    ...chamado,
-                    tempoEspera: calcularTempoEspera(chamado.horaInicio),
-                }))
+                prevChamados.map((chamado) =>
+                    chamado.status === "em atendimento"
+                        ? chamado // Não recalcula o tempo de espera para chamados em atendimento
+                        : {
+                            ...chamado,
+                            tempoEspera: calcularTempoEspera(chamado.horaInicio),
+                        }
+                )
             );
         }, 1000);
-
+    
         return () => clearInterval(interval); // Limpeza ao desmontar
     }, [calcularTempoEspera]);
+    
 
     // Atualizações em tempo real
     useEffect(() => {
@@ -137,7 +143,10 @@ const SuporteView = ({ user, baseUrl }) => {
                         setChamados((prevChamados) =>
                             prevChamados.map((chamado) =>
                                 chamado.id === response.chamado.suporte.id_suporte
-                                    ? { ...chamado, status: "em atendimento" }
+                                    ? {
+                                        ...chamado,
+                                        status: "em atendimento"
+                                    }
                                     : chamado
                             )
                         );
