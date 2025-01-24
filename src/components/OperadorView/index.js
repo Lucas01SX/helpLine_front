@@ -47,7 +47,7 @@ const OperadorView = ({ user, baseUrl }) => {
     // Gerenciar eventos recebidos do socket
     useEffect(() => {
         socket.on('atualizar_suporte', (response) => {
-            console.log(response.chamado)
+            
             try {
                 if (suporte && suporte.gerarSuporte && response.chamado.id_suporte === suporte.gerarSuporte.id_suporte) {
                     if (response.action === 'finalizar') {
