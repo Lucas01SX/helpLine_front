@@ -179,7 +179,7 @@ const SuporteView = ({ user, baseUrl }) => {
         },
             (response) => {
                 if (response.suporte.matricula === user.matricula) {
-                    const linkTeams = `https://teams.microsoft.com/l/call/0/0?users=${chamado.loginOperador}@corp.caixa.gov.br`;
+                    const linkTeams = `msteams://teams.microsoft.com/l/call/0/0?users=${chamado.loginOperador}@corp.caixa.gov.br`;
                     window.open(linkTeams, '_blank');
                     setChamadoSelecionado(chamado);
                 } else {

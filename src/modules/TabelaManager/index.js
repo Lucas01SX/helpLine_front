@@ -12,6 +12,8 @@ const TabelaManager = ({ usuarios }) => {
                         <th>Supervisor</th>
                         <th>Fila</th>
                         <th>Tempo Espera</th>
+                        <th>Tempo Atendimento</th>
+                        <th>Nome Suporte</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -19,10 +21,12 @@ const TabelaManager = ({ usuarios }) => {
                     {usuarios.map((usuario, index) => (
                         <tr key={index}>
                             <td>{usuario.login}</td>
-                            <td>{usuario.nome}</td>
+                            <td>{usuario.nomeOperador}</td>
                             <td>{usuario.supervisor}</td>
                             <td>{usuario.fila}</td>
                             <td>{usuario.tempEspera}</td>
+                            <td>{usuario.tempAtendimento}</td>
+                            <td>{usuario.nomeSuporte}</td>
                             <td>{usuario.status}</td>
                         </tr>
                     ))}

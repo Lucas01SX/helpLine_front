@@ -18,6 +18,7 @@ const OperadorView = ({ user, baseUrl }) => {
 
 
 
+
     // Buscar as filas disponíveis ao carregar o componente
     useEffect(() => {
         const fetchFilas = async () => {
@@ -162,15 +163,19 @@ const OperadorView = ({ user, baseUrl }) => {
         let intervalId;
 
         if (cardVisivel) {
-            intervalId = setInterval(() => {
+            if (botaoCancelarDesabilitado) {
                 setTempoEspera(calcularTempoEspera());
-            }, 1000);
+            } else {
+                intervalId = setInterval(() => {
+                    setTempoEspera(calcularTempoEspera());
+                }, 1000);
+            }
         }
 
         return () => {
             clearInterval(intervalId);
         };
-    }, [cardVisivel, calcularTempoEspera]);
+    }, [cardVisivel, calcularTempoEspera, botaoCancelarDesabilitado]);
 
     return (
         <div className="operador-view">

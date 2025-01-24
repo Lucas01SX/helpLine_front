@@ -14,7 +14,6 @@ const CardSuporte = ({ tempoEspera, fila, handleCancelarSuporte, botaoCancelarDe
                 <span style={{ animation: 'piscando 1s infinite' }}>
                     Tempo de Espera: {tempoEspera}
                 </span>
-                {/* Renderiza o botão ou o texto "Em Atendimento" com base no estado */}
                 {botaoCancelarDesabilitado ? (
                     <span className="em-atendimento">Em Atendimento</span>
                 ) : (

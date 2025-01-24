@@ -38,12 +38,13 @@ const ManagerView = ({user, baseUrl}) => {
 
     // Atualizar lista de usuários logados em tempo real
     useEffect(() => {
-        socket.on('usuarios_atualizados', (usuarios) => {
-            setUsuariosLogados(usuarios);
+        socket.on('atualizar_suporte', (response) => {
+            console.log(response)
+            // setUsuariosLogados(response);
         });
 
         return () => {
-            socket.off('usuarios_atualizados');
+            socket.off('atualizar_suporte');
         };
     }, []);
 
