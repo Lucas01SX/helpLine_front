@@ -9,7 +9,7 @@ import './App.css'
 const Home = () => {
     const { user } = useAuth();
 
-    const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
+    const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost' || window.location.hostname === '172.32.1.73';
     const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
 
     // Verifica se o user está disponível antes de acessar codfuncao

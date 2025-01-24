@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 
-const TabelaManager = ({ usuarios }) => {
+const TabelaManager = ({ dados }) => {
     return (
         <div className="tabela-container">
             <table className="tabela-suporte">
@@ -18,16 +18,16 @@ const TabelaManager = ({ usuarios }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {usuarios.map((usuario, index) => (
+                    {dados.map((usuario, index) => (
                         <tr key={index}>
                             <td>{usuario.login}</td>
-                            <td>{usuario.nomeOperador}</td>
-                            <td>{usuario.supervisor}</td>
+                            <td>{usuario.nomeOperador || 'N/A'}</td>
+                            <td>{usuario.supervisor || 'N/A'}</td>
                             <td>{usuario.fila}</td>
-                            <td>{usuario.tempEspera}</td>
-                            <td>{usuario.tempAtendimento}</td>
-                            <td>{usuario.nomeSuporte}</td>
-                            <td>{usuario.status}</td>
+                            <td>{usuario.tempEspera || 'N/A'}</td>
+                            <td>{usuario.tempAtendimento || 'N/A'}</td>
+                            <td>{usuario.nomeSuporte || 'N/A'}</td>
+                            <td>{usuario.status || 'N/A'}</td>
                         </tr>
                     ))}
                 </tbody>

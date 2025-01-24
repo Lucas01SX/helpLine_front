@@ -12,7 +12,7 @@ const OperadorView = ({ user, baseUrl }) => {
     const [suporte, setSuporte] = useState(null); // Dados do suporte ativo
     const [erroFilas, setErroFilas] = useState(false);
     const [tempoEspera, setTempoEspera] = useState('00:00:00');
-    const [botaoSolicitarVisivel, setBotaoSolicitarVisivel] = useState(true); // Controle do botão "Solicitar Suporte"
+    const [botaoSolicitarVisivel, setBotaoSolicitarVisivel] = useState(false); // Controle do botão "Solicitar Suporte"
     const [cardVisivel, setCardVisivel] = useState(false); // Controle do card de suporte
     const [botaoCancelarDesabilitado, setBotaoCancelarDesabilitado] = useState(false); // Desabilitar botão "Cancelar"
 
@@ -47,7 +47,6 @@ const OperadorView = ({ user, baseUrl }) => {
     // Gerenciar eventos recebidos do socket
     useEffect(() => {
         socket.on('atualizar_suporte', (response) => {
-            
             try {
                 if (suporte && suporte.gerarSuporte && response.chamado.id_suporte === suporte.gerarSuporte.id_suporte) {
                     if (response.action === 'finalizar') {
@@ -187,6 +186,10 @@ const OperadorView = ({ user, baseUrl }) => {
                     Não foi possível carregar as filas. Tente novamente mais tarde.
                 </p>
             )}
+
+            <div className='erro-page'>
+                <h1>EM MANUTENÇÃO, FAVOR PROCURAR SUPORTE COM SEU SUPERVISOR</h1>
+            </div>
 
             <div className="selectOperador">
                 <CFormSelect

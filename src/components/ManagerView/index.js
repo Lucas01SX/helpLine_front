@@ -13,6 +13,8 @@ const ManagerView = ({ user, baseUrl }) => {
     const [segmentosSelecionados, setSegmentosSelecionados] = useState([]);
     const [filasSelecionadas, setFilasSelecionadas] = useState([]);
     const [erroFilas, setErroFilas] = useState(false);
+    const [dadosTabela, setDadosTabela] = useState([]);
+
 
     // Buscar as filas disponíveis ao carregar o componente
     useEffect(() => {
@@ -39,26 +41,14 @@ const ManagerView = ({ user, baseUrl }) => {
 
     // Consulta os chamados iniciais
     useEffect(() => {
-
         socket.emit('atualizar_manager', (response) => {
-            console.log(response);
+            console.log(response)
+            if (response.consulta) {
+                setDadosTabela(response.consulta);
+            }
         });
-
-
-
     }, []);
 
-    // Atualizar lista de usuários logados em tempo real
-    useEffect(() => {
-        socket.on('atualizar_suporte', (response) => {
-            // console.log(response)
-            // setUsuariosLogados(response);
-        });
-
-        return () => {
-            socket.off('atualizar_suporte');
-        };
-    }, []);
 
     // Obter opções de segmentos
     const segmentosOptions = [
@@ -122,7 +112,7 @@ const ManagerView = ({ user, baseUrl }) => {
             </div>
 
             {/* Tabela de Usuários */}
-            <TabelaManager usuarios={usuariosFiltrados} />
+            <TabelaManager dados={dadosTabela} />
 
             {erroFilas && <p className="error">Erro ao carregar filas.</p>}
         </div>
