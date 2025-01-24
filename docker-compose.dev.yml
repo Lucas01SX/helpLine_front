@@ -10,5 +10,5 @@ services:
     environment:
       - NODE_ENV=production
     deploy:
-      replicas: 5
+      replicas: 1
       mode: replicated
