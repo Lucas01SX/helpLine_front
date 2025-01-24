@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  react-app:
+    image: minha-app-react:latest
+    ports:
+      - "5001:80"
+    volumes:
+      - ./src:/app/src
+    environment:
+      - NODE_ENV=production
+    deploy:
+      replicas: 1
+      mode: replicated
