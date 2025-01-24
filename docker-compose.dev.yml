@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   react-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: minha-app-react:latest
     ports:
-      - "5001:80"  # Porta exclusiva para desenvolvimento
+      - "5001:80"
     volumes:
       - ./src:/app/src
     environment:
-      - NODE_ENV=development
-    command: ["npm", "start"]  # Comando para rodar no dev
+      - NODE_ENV=production
+    deploy:
+      replicas: 5
+      mode: replicated
