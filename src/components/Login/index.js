@@ -92,6 +92,7 @@ const Login = () => {
     };
 
     return (
+
         <div className="login-container">
             <h2>
                 {isCadastro
@@ -104,6 +105,7 @@ const Login = () => {
                 <div className="input-group">
                     <label>Matrícula Plansul</label>
                     <input
+                        autoComplete='matricula'
                         type="text"
                         value={matricula}
                         onChange={(e) => setMatricula(e.target.value)}
@@ -113,6 +115,7 @@ const Login = () => {
                 <div className="input-group">
                     <label>Senha</label>
                     <input
+                        autoComplete="current-password"
                         type="password"
                         value={senha}
                         onChange={(e) => setSenha(e.target.value)}
@@ -123,6 +126,7 @@ const Login = () => {
                     <div className="input-group">
                         <label>Confirme sua Senha</label>
                         <input
+                            autoComplete="new-password"
                             type="password"
                             value={confirmarSenha}
                             onChange={(e) => setConfirmarSenha(e.target.value)}
@@ -140,6 +144,7 @@ const Login = () => {
                 </button>
             </form>
         </div>
+
     );
 };
 

@@ -206,7 +206,8 @@ const OperadorView = ({ user, baseUrl }) => {
                     <CButton
                         onClick={handleSolicitarSuporte}
                         disabled={!filaSelecionada || erroFilas}
-                        className="filaSelect"
+                        className="btn-success text-white px-4 py-2"
+                        style={{ width: 'fit-content', borderRadius: '4px' }}
                     >
                         Solicitar Suporte
                         <img

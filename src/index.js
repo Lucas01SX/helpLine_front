@@ -5,14 +5,17 @@ import { AuthProvider } from './context/AuthContext';  // Importando o AuthProvi
 import Header from './components/Header';
 import Login from './components/Login';
 import Home from './components/Home';
+import ManagerView from './components/ManagerView';
 import './App.css';
+import SuporteView from './components/SuporteView';
+
 
 
 // Layout Wrapper para páginas com Header
 const Layout = ({ children }) => (
   <>
     <Header />
-    <div style={{ marginTop: '50px' }}>{children}</div> {/* Espaço abaixo do Header */}
+    <div>{children}</div> {/* Espaço abaixo do Header */}
   </>
 );
 
@@ -27,14 +30,11 @@ root.render(
           <Route path="/" element={<Login />} />
 
           {/* Páginas com Header */}
-          <Route
-            path="/home"
-            element={
-              <Layout>
-                <Home />
-              </Layout>
-            }
-          />
+          <Route path="/home" element={<Layout> <Home /> </Layout>} />
+
+          <Route path="/manager" element={<Layout> <ManagerView /> </Layout>} />
+
+          <Route path="/suporte" element={<Layout> <SuporteView /> </Layout>} />
 
           {/* Rota para redirecionar para "/" em caso de erro 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,4 +1,4 @@
-.header {
+.header-page {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -20,11 +20,12 @@
 
 .header-right {
     display: flex;
-    align-items: center; /* Alinha os itens no centro verticalmente */
+    align-items: center;
+    gap: 1rem;
+    list-style-type: none;
 }
 
 .btnSair {
-    width: 100%;
     padding: 10px;
     background-color: #ff0000;
     color: white;
