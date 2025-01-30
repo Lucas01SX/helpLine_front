@@ -1,0 +1,16 @@
+.c-dropdown-menu{
+    background-color: #022954;
+    
+}
+
+.dropdown-item{
+    color: #FFF;
+}
+.header-dropdown{
+    color: #FF793C;
+    background-color: #022954 !important;
+}
+
+.dropdown-divider{
+    background-color: #FF793C;
+}

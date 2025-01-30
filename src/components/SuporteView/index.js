@@ -8,6 +8,7 @@ const SuporteView = ({ user, baseUrl }) => {
     const [chamados, setChamados] = useState([]);
     const [chamadoSelecionado, setChamadoSelecionado] = useState(null);
     const [filasHabilitadas, setFilasHabilitadas] = useState([]);
+    const matriculaLocal = user ? user.matricula : ''
 
     const calcularTempoEspera = useCallback((horaInicio) => {
         if (!horaInicio) return '00:00:00'; // Verificação defensiva
@@ -53,7 +54,7 @@ const SuporteView = ({ user, baseUrl }) => {
                 const response = await fetch(`${baseUrl}/suporte-api/api/filas/consulta/skill`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ matricula: user.matricula }),
+                    body: JSON.stringify({ matricula: matriculaLocal }),
                 });
 
                 if (response.ok) {
@@ -70,10 +71,10 @@ const SuporteView = ({ user, baseUrl }) => {
         };
 
         fetchFilasHabilitadas();
-    }, [user.matricula, baseUrl]);
+    }, [matriculaLocal, baseUrl]);
 
-    // Consulta os chamados iniciais
     useEffect(() => {
+        // Função que consulta os chamados
         const consultarSuporte = () => {
             socket.emit('consultar_suporte', (response) => {
                 if (response.message === "Dados de consulta atualizados" && response.consulta) {
@@ -95,8 +96,22 @@ const SuporteView = ({ user, baseUrl }) => {
             });
         };
 
-        if (filasHabilitadas.length > 0) consultarSuporte();
+        // Executa a consulta inicial
+        if (filasHabilitadas.length > 0) {
+            consultarSuporte();
+        }
+
+        // Configura o intervalo para rodar a cada 5 minutos (300000ms)
+        const intervalId = setInterval(() => {
+            if (filasHabilitadas.length > 0) {
+                consultarSuporte();
+            }
+        }, 300000); // 300000ms = 5 minutos
+
+        // Limpeza do intervalo quando o componente for desmontado ou quando 'filasHabilitadas' mudar
+        return () => clearInterval(intervalId);
     }, [filasHabilitadas, calcularTempoEspera]);
+
 
 
 
@@ -183,13 +198,13 @@ const SuporteView = ({ user, baseUrl }) => {
 
         socket.emit('atender_chamado', {
             idSuporte: chamado.id,
-            matSuporte: user.matricula,
+            matSuporte: matriculaLocal,
             dtSuporte: date,
             hrSuporte: hora,
             tpAguardado: tempoEspera,
         },
             (response) => {
-                if (response.suporte.matricula === user.matricula) {
+                if (response.suporte.matricula === matriculaLocal) {
                     const linkTeams = `msteams://teams.microsoft.com/l/call/0/0?users=${chamado.loginOperador}@corp.caixa.gov.br`;
                     window.open(linkTeams, '_blank');
                     setChamadoSelecionado(chamado);
@@ -206,7 +221,7 @@ const SuporteView = ({ user, baseUrl }) => {
 
             socket.emit('finalizar_chamado', {
                 idSuporte: chamado.id,
-                matSuporte: user.matricula,
+                matSuporte: matriculaLocal,
                 hrSuporte: hora,
             });
 

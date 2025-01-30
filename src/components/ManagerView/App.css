@@ -1,5 +1,8 @@
 .manager-view {
     padding: 20px;
+    background-color: #212631;
+    overflow-y: auto;
+    height: 94.8vh;
 }
 
 .filters {
@@ -19,4 +22,12 @@
 .error {
     color: red;
     margin-top: 20px;
+}
+
+.tables {
+    display: flex;
+    max-width: 100%;
+    justify-content: space-between;
+    background-color: transparent;
+    gap: 5px;
 }

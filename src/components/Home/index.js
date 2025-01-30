@@ -18,22 +18,27 @@ const Home = () => {
     }
 
     let ComponentToRender;
-
+    let classe = 'home-container'
     switch (user.codfuncao) {
         case 1066:
         case 14936:
             ComponentToRender = <OperadorView user={user} baseUrl={baseUrl} />;
+            classe = 'operador-container';
             break;
         case 1031:
+        case 935:
+        case 14942:
+        case 15264:
             ComponentToRender = <ManagerView user={user} baseUrl={baseUrl} />;
             break;
         default:
             ComponentToRender = <SuporteView user={user} baseUrl={baseUrl} />;
+            classe = 'home-container'
             break;
     }
 
     return (
-        <div className="home-container">
+        <div className={classe}>
             {ComponentToRender}
         </div>
     );

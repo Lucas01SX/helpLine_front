@@ -6,9 +6,9 @@
 
 body {
     font-family: Arial, sans-serif;
-    height: 90vh; /* Ocupa toda a altura da janela */
-    background-image: url('./assets/img/background_black.webp'); /* Caminho relativo */
-    background-size: cover; /* Ajusta o tamanho da imagem */
-    background-position: center; /* Centraliza a imagem */
-    background-repeat: no-repeat; /* Evita repetição */
+    height: 90vh;
+    background-image: url('./assets/img/background_black.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
