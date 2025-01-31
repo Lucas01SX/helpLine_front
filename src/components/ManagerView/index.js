@@ -15,6 +15,7 @@ const ManagerView = ({ baseUrl }) => {
     const [dadosTabela, setDadosTabela] = useState([]);
     const [dadosFiltrados, setDadosFiltrados] = useState([]);
     const [usuariosLogados, setUsuariosLogados] = useState([]);
+    const [dadosCards, setDadosCards] = useState([]);
 
     // Função para calcular o tempo de espera
     const calcularTempoEspera = useCallback((horaInicio) => {
@@ -86,13 +87,6 @@ const ManagerView = ({ baseUrl }) => {
         }));
     }, [calcularTempoEspera]);
 
-    const usuariosFiltrados = useCallback((dados) => {
-        return dados.map((users) => ({
-            ...users,
-            avatar: avatar1,
-            status: 'success',
-        }));
-    }, []);
 
     // Atualizar o tempo de atendimento a cada segundo
     useEffect(() => {
@@ -106,26 +100,64 @@ const ManagerView = ({ baseUrl }) => {
         return () => clearInterval(interval);
     }, []);
 
+    const processarDadosLogados = (dados) => {
+        console.log(dados)
+        if (dados) {
+            return dados.map((usuario) => ({
+                ...usuario,
+                fila: usuario.fila.split(','), // Transforma a string em array
+                mcdu: usuario.mcdu.split(','), // Transforma a string em array
+                segmento: usuario.segmento.split(','), // Transforma a string em array
+            }));
+        }
+
+    };
+
+    const usuariosFiltrados = useCallback((dados, segmentosSelecionados, filasSelecionadas) => {
+        return dados
+            .filter((usuario) => {
+                // Filtro por segmentos
+                if (segmentosSelecionados.length > 0) {
+                    const segmentosValores = segmentosSelecionados.map((s) => s.value);
+                    return usuario.segmento.some((seg) => segmentosValores.includes(seg));
+                }
+                return true;
+            })
+            .filter((usuario) => {
+                // Filtro por filas
+                if (filasSelecionadas.length > 0) {
+                    const filasValores = filasSelecionadas.map((f) => f.value);
+                    return usuario.fila.some((f) => filasValores.includes(f));
+                }
+                return true;
+            })
+            .map((usuario) => ({
+                ...usuario,
+                avatar: avatar1,
+                status: 'success',
+            }));
+    }, []);
+
     // Consulta os Logados a cada 5 minutos
     useEffect(() => {
-        socket.emit('consultar_logados', (response) => {
-            if (response.logados) {
-                const valores = usuariosFiltrados(response.logados);
-                setUsuariosLogados(valores);
-            }
-        });
-
-        const interval = setInterval(() => {
+        const consultarLogados = () => {
             socket.emit('consultar_logados', (response) => {
                 if (response.logados) {
-                    const valores = usuariosFiltrados(response.logados);
+                    const dadosProcessados = processarDadosLogados(response.logados);
+                    const valores = usuariosFiltrados(dadosProcessados, segmentosSelecionados, filasSelecionadas);
                     setUsuariosLogados(valores);
                 }
             });
+        };
+
+        consultarLogados();
+
+        const interval = setInterval(() => {
+            consultarLogados();
         }, 300000);
 
         return () => clearInterval(interval);
-    }, [usuariosFiltrados]);
+    }, [segmentosSelecionados, filasSelecionadas, usuariosFiltrados]);
 
     // Consulta os chamados iniciais e trata os dados
     useEffect(() => {
@@ -151,7 +183,7 @@ const ManagerView = ({ baseUrl }) => {
     useEffect(() => {
         const fetchFilas = async () => {
             try {
-                const response = await fetch(`${baseUrl}/suporte-api-dev/api/filas/gerais`);
+                const response = await fetch(`${baseUrl}/suporte-api/api/filas/gerais`);
                 const data = await response.json();
 
                 if (Array.isArray(data.filas)) {
@@ -208,10 +240,28 @@ const ManagerView = ({ baseUrl }) => {
             label: f.fila,
         }));
 
+    useEffect(() => {
+        const atualizarDadosCards = () => {
+            socket.emit('cards_dashboard', (response) => {
+                if (response.dadosDashboard) {
+                    setDadosCards(response.dadosDashboard);
+                }
+            });
+        };
+
+        atualizarDadosCards();
+
+        // const interval = setInterval(() => {
+        //     atualizarDadosCards();
+        // }, 1000);
+
+        // return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="manager-view">
             {/* Cards do Dashboard */}
-            <CardsDashboard />
+            <CardsDashboard dados={dadosCards} />
 
             {/* Filtros de Segmento e Fila */}
             <div className="filters">

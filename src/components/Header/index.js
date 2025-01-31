@@ -17,7 +17,6 @@ const Header = () => {
         socket.emit('logoff',
             { token: user.token },
             (response) => {
-                console.log(response);
                 if (response.message === 'Logoff realizado' || 'seção não encontrado') {
                     logout();
                     navigate('/');
@@ -29,13 +28,13 @@ const Header = () => {
         if (user) {
             // Emite imediatamente ao carregar a página
             socket.emit('atualizar_token', { token: user.token }, (response) => {
-                console.log(response);
+
             });
 
             // Configura o intervalo para emitir a cada minuto (60.000 ms)
             const interval = setInterval(() => {
                 socket.emit('atualizar_token', { token: user.token }, (response) => {
-                    console.log(response);
+
                 });
             }, 60000);
 

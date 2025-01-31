@@ -33,7 +33,7 @@ const Dropdown = ({ user, onLogout }) => {
     };
 
     const handleMatriculaSubmit = (matricula) => {
-        
+
         socket.emit('reset_senha', { matricula_reset: matricula, matricula_solicitacao: matriculaSolicitacao }, (response) => {
             console.log(response);
         });
@@ -42,6 +42,10 @@ const Dropdown = ({ user, onLogout }) => {
 
     const handleSuporteClick = () => {
         navigate('/suporte');
+    };
+
+    const handleManagerClick = () => {
+        navigate('/manager');
     };
 
     return (
@@ -58,8 +62,12 @@ const Dropdown = ({ user, onLogout }) => {
                             Reset Senha
                         </CDropdownItem>
                         <CDropdownDivider />
-                        <CDropdownHeader className="bg-body-secondary fw-semibold my-2 header-dropdown">Páginas - Em Implantação</CDropdownHeader>
+                        <CDropdownHeader className="bg-body-secondary fw-semibold my-2 header-dropdown">Páginas</CDropdownHeader>
                         <CDropdownItem onClick={handleSuporteClick}>
+                            <CIcon icon={cilUser} className="me-2" />
+                            Suporte
+                        </CDropdownItem>
+                        <CDropdownItem onClick={handleManagerClick}>
                             <CIcon icon={cilUser} className="me-2" />
                             Manager
                         </CDropdownItem>

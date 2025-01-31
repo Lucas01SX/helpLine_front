@@ -1,8 +1,8 @@
 import React from 'react';
 import WidgetsDropdown from '../../widgets/WidgetsDropdown';
 
-const CardsDashboard = () => {
-  return <WidgetsDropdown className="mb-4" />;
+const CardsDashboard = ({ dados }) => {
+  return <WidgetsDropdown className="mb-4" dados={dados} />;
 };
 
 export default CardsDashboard;

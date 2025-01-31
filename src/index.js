@@ -5,9 +5,7 @@ import { AuthProvider } from './context/AuthContext';  // Importando o AuthProvi
 import Header from './components/Header';
 import Login from './components/Login';
 import Home from './components/Home';
-import ManagerView from './components/ManagerView';
 import './App.css';
-import SuporteView from './components/SuporteView';
 
 
 
@@ -21,6 +19,7 @@ const Layout = ({ children }) => (
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
+
 root.render(
   <React.StrictMode>
     <AuthProvider>  {/* Envolvendo com o AuthProvider */}
@@ -30,11 +29,9 @@ root.render(
           <Route path="/" element={<Login />} />
 
           {/* Páginas com Header */}
-          <Route path="/home" element={<Layout> <Home /> </Layout>} />
-
-          <Route path="/manager" element={<Layout> <ManagerView /> </Layout>} />
-
-          <Route path="/suporte" element={<Layout> <SuporteView /> </Layout>} />
+          <Route path="/suporte" element={<Layout> <Home page="SuporteView" /> </Layout>} />
+          <Route path="/manager" element={<Layout> <Home page="ManagerView" /> </Layout>} />
+          <Route path="/operador" element={<Layout> <Home page="OperadorView" /> </Layout>} />
 
           {/* Rota para redirecionar para "/" em caso de erro 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />

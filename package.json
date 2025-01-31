@@ -12,6 +12,7 @@
     "@coreui/utils": "^2.0.2",
     "@tanstack/react-table": "^8.20.6",
     "bcryptjs": "^2.4.3",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "classnames": "^2.5.1",
     "react": "^19.0.0",
     "react-data-table-component": "^7.6.2",

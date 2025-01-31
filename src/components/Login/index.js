@@ -71,7 +71,7 @@ const Login = () => {
                     else if (response.message === 'Autenticação bem-sucedida!') {
                         login(response.user);
                         socket.connect();
-                        navigate('/home');
+                        navigate('/operador');
                     } else {
                         setErro(response.message)
                     }

@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from 'react'
-import PropTypes from 'prop-types'
-
+import React, { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import {
   CRow,
   CCol,
@@ -9,75 +8,86 @@ import {
   CDropdownItem,
   CDropdownToggle,
   CWidgetStatsA,
-} from '@coreui/react'
-import { getStyle } from '@coreui/utils'
-import { CChartBar, CChartLine } from '@coreui/react-chartjs'
-import CIcon from '@coreui/icons-react'
-import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons'
+} from '@coreui/react';
+import { getStyle } from '@coreui/utils';
+import { CChartBar, CChartLine } from '@coreui/react-chartjs';
+import CIcon from '@coreui/icons-react';
+import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons';
+import ChartDataLabels from 'chartjs-plugin-datalabels'; // Importe o plugin
 
-const WidgetsDropdown = (props) => {
-  const widgetChartRef1 = useRef(null)
-  const widgetChartRef2 = useRef(null)
+const WidgetsDropdown = ({ className, dados }) => {
+  const widgetChartRef1 = useRef(null);
+  const widgetChartRef2 = useRef(null);
+
+  // Calcular as somas totais
+  const totalLogados = dados.reduce((acc, curr) => acc + curr.logados, 0);
+  const totalAcionamentos = dados.reduce((acc, curr) => acc + curr.acionamentos, 0);
+  const totalTempoMedioEspera = dados.reduce((acc, curr) => acc + curr.tempoMedioEspera, 0);
+  const totalChamadosCancelados = dados.reduce((acc, curr) => acc + curr.chamadosCancelados, 0);
+
+  // Preparar os dados para os gráficos
+  const labels = dados.map((item) => item.hora);
+  const logadosData = dados.map((item) => item.logados);
+  const acionamentosData = dados.map((item) => item.acionamentos);
+  const tempoMedioEsperaData = dados.map((item) => item.tempoMedioEspera);
+  const chamadosCanceladosData = dados.map((item) => item.chamadosCancelados);
 
   useEffect(() => {
     document.documentElement.addEventListener('ColorSchemeChange', () => {
       if (widgetChartRef1.current) {
         setTimeout(() => {
-          widgetChartRef1.current.data.datasets[0].pointBackgroundColor = getStyle('--cui-primary')
-          widgetChartRef1.current.update()
-        })
+          widgetChartRef1.current.data.datasets[0].pointBackgroundColor = getStyle('--cui-primary');
+          widgetChartRef1.current.update();
+        });
       }
 
       if (widgetChartRef2.current) {
         setTimeout(() => {
-          widgetChartRef2.current.data.datasets[0].pointBackgroundColor = getStyle('--cui-info')
-          widgetChartRef2.current.update()
-        })
+          widgetChartRef2.current.data.datasets[0].pointBackgroundColor = getStyle('--cui-info');
+          widgetChartRef2.current.update();
+        });
       }
-    })
-  }, [widgetChartRef1, widgetChartRef2])
+    });
+  }, [widgetChartRef1, widgetChartRef2]);
 
   return (
-    <CRow className={props.className} xs={{ gutter: 4 }}>
+    <CRow className={className} xs={{ gutter: 4 }}>
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="primary"
           value={
             <>
-              0%{' '}
-              <span className="fs-6 fw-normal">
-                (0% <CIcon icon={cilArrowBottom} />)
-              </span>
+              {totalLogados}{' '}
             </>
           }
           title="Logados"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-                <CIcon icon={cilOptions} />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
+          // action={
+          //   <CDropdown alignment="end">
+          //     <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+          //       <CIcon icon={cilOptions} />
+          //     </CDropdownToggle>
+          //     <CDropdownMenu>
+          //       <CDropdownItem>Action</CDropdownItem>
+          //       <CDropdownItem>Another action</CDropdownItem>
+          //       <CDropdownItem>Something else here...</CDropdownItem>
+          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
+          //     </CDropdownMenu>
+          //   </CDropdown>
+          // }
           chart={
             <CChartLine
               ref={widgetChartRef1}
               className="mt-3 mx-3"
-              style={{ height: '70px' }}
+              style={{ height: '100px' }}
               data={{
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                labels: labels,
                 datasets: [
                   {
-                    label: 'My First dataset',
+                    label: 'Logados',
                     backgroundColor: 'transparent',
-                    borderColor: 'rgba(255,255,255,.55)',
+                    borderColor: 'rgb(255, 255, 255)',
                     pointBackgroundColor: getStyle('--cui-primary'),
-                    data: [65, 59, 84, 84, 51, 55, 40],
+                    data: logadosData,
                   },
                 ],
               }}
@@ -85,6 +95,20 @@ const WidgetsDropdown = (props) => {
                 plugins: {
                   legend: {
                     display: false,
+                  },
+                  tooltip: {
+                    callbacks: {
+                      title: () => '', // Remove o título (label da faixa de hora)
+                      label: (context) => {
+                        return `${context.label}`; // Exibe apenas o valor do ponto
+                      },
+                    },
+                  },
+                  datalabels: {
+                    color: '#fff', // Texto branco
+                    anchor: 'end', // Posiciona o rótulo no topo do ponto
+                    align: 'top', // Alinha o rótulo acima do ponto
+                    formatter: (value) => value, // Exibe o valor do ponto
                   },
                 },
                 maintainAspectRatio: false,
@@ -99,11 +123,12 @@ const WidgetsDropdown = (props) => {
                     },
                     ticks: {
                       display: false,
+                      color: '#fff', // Texto branco para os ticks do eixo X
                     },
                   },
                   y: {
-                    min: 30,
-                    max: 89,
+                    min: 0,
+                    max: Math.max(...logadosData) + 100,
                     display: false,
                     grid: {
                       display: false,
@@ -125,49 +150,48 @@ const WidgetsDropdown = (props) => {
                   },
                 },
               }}
+              plugins={[ChartDataLabels]} // Adicione o plugin ao gráfico
             />
           }
         />
       </CCol>
+
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="info"
           value={
             <>
-              0%{' '}
-              <span className="fs-6 fw-normal">
-                (0% <CIcon icon={cilArrowTop} />)
-              </span>
+              {totalAcionamentos}{' '}
             </>
           }
           title="Acionamentos"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-                <CIcon icon={cilOptions} />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
+          // action={
+          //   <CDropdown alignment="end">
+          //     <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+          //       <CIcon icon={cilOptions} />
+          //     </CDropdownToggle>
+          //     <CDropdownMenu>
+          //       <CDropdownItem>Action</CDropdownItem>
+          //       <CDropdownItem>Another action</CDropdownItem>
+          //       <CDropdownItem>Something else here...</CDropdownItem>
+          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
+          //     </CDropdownMenu>
+          //   </CDropdown>
+          // }
           chart={
             <CChartLine
               ref={widgetChartRef2}
               className="mt-3 mx-3"
-              style={{ height: '70px' }}
+              style={{ height: '100px' }}
               data={{
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'teste'],
+                labels: labels,
                 datasets: [
                   {
-                    label: 'My First dataset',
+                    label: 'Acionamentos',
                     backgroundColor: 'transparent',
-                    borderColor: 'rgba(255,255,255,.55)',
+                    borderColor: 'rgb(255, 255, 255)',
                     pointBackgroundColor: getStyle('--cui-info'),
-                    data: [1, 18, 9, 17, 34, 22, 11],
+                    data: acionamentosData,
                   },
                 ],
               }}
@@ -175,6 +199,12 @@ const WidgetsDropdown = (props) => {
                 plugins: {
                   legend: {
                     display: false,
+                  },
+                  datalabels: {
+                    color: '#fff', // Texto branco
+                    anchor: 'end', // Posiciona o rótulo no topo do ponto
+                    align: 'top', // Alinha o rótulo acima do ponto
+                    formatter: (value) => value, // Exibe o valor do ponto
                   },
                 },
                 maintainAspectRatio: false,
@@ -189,11 +219,12 @@ const WidgetsDropdown = (props) => {
                     },
                     ticks: {
                       display: false,
+                      color: '#fff', // Texto branco para os ticks do eixo X
                     },
                   },
                   y: {
-                    min: -9,
-                    max: 39,
+                    min: 0,
+                    max: Math.max(...acionamentosData) + 100,
                     display: false,
                     grid: {
                       display: false,
@@ -214,47 +245,46 @@ const WidgetsDropdown = (props) => {
                   },
                 },
               }}
+              plugins={[ChartDataLabels]} // Adicione o plugin ao gráfico
             />
           }
         />
       </CCol>
+
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="warning"
           value={
             <>
-              0%{' '}
-              <span className="fs-6 fw-normal">
-                (0% <CIcon icon={cilArrowTop} />)
-              </span>
+              {totalTempoMedioEspera.toFixed(2)}{' '}
             </>
           }
           title="Tempo Médio Espera"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-                <CIcon icon={cilOptions} />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
+          // action={
+          //   <CDropdown alignment="end">
+          //     <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+          //       <CIcon icon={cilOptions} />
+          //     </CDropdownToggle>
+          //     <CDropdownMenu>
+          //       <CDropdownItem>Action</CDropdownItem>
+          //       <CDropdownItem>Another action</CDropdownItem>
+          //       <CDropdownItem>Something else here...</CDropdownItem>
+          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
+          //     </CDropdownMenu>
+          //   </CDropdown>
+          // }
           chart={
             <CChartLine
               className="mt-3"
-              style={{ height: '70px' }}
+              style={{ height: '100px' }}
               data={{
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                labels: labels,
                 datasets: [
                   {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
+                    label: 'Tempo Médio Espera',
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
                     borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40],
+                    data: tempoMedioEsperaData,
                     fill: true,
                   },
                 ],
@@ -264,6 +294,12 @@ const WidgetsDropdown = (props) => {
                   legend: {
                     display: false,
                   },
+                  datalabels: {
+                    color: '#fff', // Texto branco
+                    anchor: 'end', // Posiciona o rótulo no topo do ponto
+                    align: 'top', // Alinha o rótulo acima do ponto
+                    formatter: (value) => value.toFixed(2), // Exibe o valor do ponto com 2 casas decimais
+                  },
                 },
                 maintainAspectRatio: false,
                 scales: {
@@ -272,6 +308,7 @@ const WidgetsDropdown = (props) => {
                   },
                   y: {
                     display: false,
+                    max: Math.max(...tempoMedioEsperaData) + 0.10,
                   },
                 },
                 elements: {
@@ -286,64 +323,46 @@ const WidgetsDropdown = (props) => {
                   },
                 },
               }}
+              plugins={[ChartDataLabels]} // Adicione o plugin ao gráfico
             />
           }
         />
       </CCol>
+
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="danger"
           value={
             <>
-              0%{' '}
-              <span className="fs-6 fw-normal">
-                (0% <CIcon icon={cilArrowBottom} />)
-              </span>
+              {totalChamadosCancelados}{' '}
             </>
           }
           title="Abandonadas"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-                <CIcon icon={cilOptions} />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
+          // action={
+          //   <CDropdown alignment="end">
+          //     <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+          //       <CIcon icon={cilOptions} />
+          //     </CDropdownToggle>
+          //     <CDropdownMenu>
+          //       <CDropdownItem>Action</CDropdownItem>
+          //       <CDropdownItem>Another action</CDropdownItem>
+          //       <CDropdownItem>Something else here...</CDropdownItem>
+          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
+          //     </CDropdownMenu>
+          //   </CDropdown>
+          // }
           chart={
             <CChartBar
               className="mt-3 mx-3"
-              style={{ height: '70px' }}
+              style={{ height: '100px' }}
               data={{
-                labels: [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December',
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                ],
+                labels: labels,
                 datasets: [
                   {
-                    label: 'My First dataset',
+                    label: 'Chamados Cancelados',
                     backgroundColor: 'rgba(255,255,255,.2)',
                     borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
+                    data: chamadosCanceladosData,
                     barPercentage: 0.6,
                   },
                 ],
@@ -354,18 +373,25 @@ const WidgetsDropdown = (props) => {
                   legend: {
                     display: false,
                   },
+                  datalabels: {
+                    color: '#fff', // Texto branco
+                    anchor: 'end', // Posiciona o rótulo no topo da barra
+                    align: 'top', // Alinha o rótulo acima da barra
+                    formatter: (value) => value, // Exibe o valor da barra
+                  },
                 },
                 scales: {
                   x: {
                     grid: {
                       display: false,
-                      drawTicks: false,
+                      drawTicks: true,
                     },
                     ticks: {
                       display: false,
                     },
                   },
                   y: {
+                    max: Math.max(...chamadosCanceladosData) + 15,
                     border: {
                       display: false,
                     },
@@ -380,17 +406,18 @@ const WidgetsDropdown = (props) => {
                   },
                 },
               }}
+              plugins={[ChartDataLabels]} // Adicione o plugin ao gráfico
             />
           }
         />
       </CCol>
     </CRow>
-  )
-}
+  );
+};
 
 WidgetsDropdown.propTypes = {
   className: PropTypes.string,
-  withCharts: PropTypes.bool,
-}
+  dados: PropTypes.array.isRequired,
+};
 
-export default WidgetsDropdown
+export default WidgetsDropdown;
