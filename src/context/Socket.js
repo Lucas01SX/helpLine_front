@@ -11,6 +11,12 @@ const socket = io(socketHost, {
     transports: ['polling'], // ou ['websocket'] se for aplicável
 });
 
+// Configura o socket com o host de DEV
+//const socket = io(socketHost, {
+//    path: '/suporte-api-dev/socket.io',
+//    transports: ['polling'], // ou ['websocket'] se for aplicável
+//});
+
 // const socket = io('http://172.32.1.81:9002', {
 //     path: '/socket.io',
 //     transports: ['polling'], // ou ['websocket'] se o WebSocket estiver funcionando
