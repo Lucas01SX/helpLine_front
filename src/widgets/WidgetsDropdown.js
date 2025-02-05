@@ -24,14 +24,14 @@ const WidgetsDropdown = ({ className, dados }) => {
   const totalAcionamentos = total?.acionamentos ?? 0;
   const totalTempoMedioEspera = total?.tempoMedioEspera ?? 0;
   const totalChamadosCancelados = total?.chamadosCancelados ?? 0;
-  
 
-  const converterParaMMSS = (tempoEmMinutos) => {
-    const minutos = Math.floor(tempoEmMinutos);
-    const segundos = Math.floor((tempoEmMinutos - minutos) * 60);
-    return `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+  const converterParaHHMMSS = (tempoEmMinutos) => {
+    const horas = Math.floor(tempoEmMinutos / 60);
+    const minutos = Math.floor(tempoEmMinutos % 60);
+    const segundos = Math.floor((tempoEmMinutos - Math.floor(tempoEmMinutos)) * 60);
+    
+    return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
   };
-
   // Preparar os dados para os gráficos
   const labels = resultado.map((item) => item.hora);
   const logadosData = resultado.map((item) => item.logados);
@@ -237,7 +237,7 @@ const WidgetsDropdown = ({ className, dados }) => {
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="warning"
-          value={converterParaMMSS(totalTempoMedioEspera)}
+          value={converterParaHHMMSS(totalTempoMedioEspera)}
           title="Tempo Médio de Espera"
           chart={
             <CChartLine
@@ -274,7 +274,7 @@ const WidgetsDropdown = ({ className, dados }) => {
                     clip: false,
                     clamp: true,
                     padding: 2,
-                    formatter: (value) => converterParaMMSS(value),
+                    formatter: (value) => converterParaHHMMSS(value),
                   },
                 },
                 maintainAspectRatio: false,
@@ -301,7 +301,7 @@ const WidgetsDropdown = ({ className, dados }) => {
                   point: { radius: 2.6, hitRadius: 10, hoverRadius: 4 },
                 },
                 layout: {
-                  padding: { left: 20, right: 20, top: 20, bottom: 20 },
+                  padding: { left: 30, right: 30, top: 20, bottom: 20 },
                 },
               }}
               plugins={[ChartDataLabels]}
