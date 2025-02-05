@@ -21,7 +21,6 @@ const Home = ({ page }) => {
                 navigate("/"); // ✅ Redireciona corretamente
             }
         };
-
         const interval = setInterval(checkTimeAndLogout, 60 * 1000);
         return () => clearInterval(interval);
     }, [logout, navigate]); 
