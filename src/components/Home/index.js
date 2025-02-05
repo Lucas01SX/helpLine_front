@@ -21,8 +21,8 @@ const Home = ({ page }) => {
     // Define as permissões para cada página
     const permissions = {
         OperadorView: [1066, 14936],
-        ManagerView: [1031, 935, 14942, 15264,828,572,574],
-        SuporteView: [1031, 935, 14942, 15264,828,572,574,944],
+        ManagerView: [1031, 935, 14942, 15264,828,572,574,15],
+        SuporteView: [1031, 935, 14942, 15264,828,572,574,944,15],
     };
     let ComponentToRender;
     let classe = 'home-container';
@@ -58,6 +58,7 @@ const Home = ({ page }) => {
             case 828:
             case 572:
             case 574:
+            case 15:
                 ComponentToRender = <ManagerView user={user} baseUrl={baseUrl} />;
                 break;
             default:
