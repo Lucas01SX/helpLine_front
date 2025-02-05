@@ -1,33 +1,50 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Navigate } from 'react-router-dom';  // Importa o Navigate para redirecionamento
+import { Navigate, useNavigate } from 'react-router-dom';
 import OperadorView from '../OperadorView';
 import SuporteView from '../SuporteView';
 import ManagerView from '../ManagerView';
-import './App.css'
+import './App.css';
 
 const Home = ({ page }) => {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
     const baseUrl = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
-    // Verifica se o user está disponível antes de acessar codfuncao
+
+    // ✅ Garante que o hook SEMPRE seja chamado
+    useEffect(() => {
+        const checkTimeAndLogout = () => {
+            const now = new Date();
+            if (now.getHours() === 22) {
+                logout();
+                navigate("/"); // ✅ Redireciona corretamente
+            }
+        };
+
+        const interval = setInterval(checkTimeAndLogout, 60 * 1000);
+        return () => clearInterval(interval);
+    }, [logout, navigate]); 
+
+    // Se o usuário não estiver autenticado, faz o redirecionamento
     if (!user) {
-        return <Navigate to="/" />;  // Redireciona para a página de login
+        return <Navigate to="/" />;
     }
-    // Função para verificar se o usuário tem permissão para acessar uma página específica
+
     const hasPermission = (requiredCodFuncao) => {
         return requiredCodFuncao.includes(user.codfuncao);
     };
-    // Define as permissões para cada página
+
     const permissions = {
         OperadorView: [1066, 14936],
-        ManagerView: [1031, 935, 14942, 15264,828,572,574,15],
-        SuporteView: [1031, 935, 14942, 15264,828,572,574,944,15],
+        ManagerView: [1031, 935, 14942, 15264, 828, 572, 574, 15],
+        SuporteView: [1031, 935, 14942, 15264, 828, 572, 574, 944, 15],
     };
+
     let ComponentToRender;
     let classe = 'home-container';
+
     if (page && permissions[page] && hasPermission(permissions[page])) {
-        // Se a prop `page` foi passada e o usuário tem permissão para acessá-la
         switch (page) {
             case 'OperadorView':
                 ComponentToRender = <OperadorView user={user} baseUrl={baseUrl} />;
@@ -40,11 +57,9 @@ const Home = ({ page }) => {
                 ComponentToRender = <SuporteView user={user} baseUrl={baseUrl} />;
                 break;
             default:
-                // Caso a página não seja reconhecida, redireciona para a página de login
                 return <Navigate to="/" />;
         }
     } else {
-        // Se a prop `page` não foi passada ou o usuário não tem permissão, usa o codfuncao para decidir
         switch (user.codfuncao) {
             case 1066:
             case 14936:
@@ -67,11 +82,8 @@ const Home = ({ page }) => {
                 break;
         }
     }
-    return (
-        <div className={classe}>
-            {ComponentToRender}
-        </div>
-    );
+
+    return <div className={classe}>{ComponentToRender}</div>;
 };
 
 export default Home;
