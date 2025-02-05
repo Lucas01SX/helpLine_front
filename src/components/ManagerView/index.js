@@ -16,67 +16,50 @@ const ManagerView = ({ baseUrl }) => {
     const [dadosFiltrados, setDadosFiltrados] = useState([]);
     const [usuariosLogados, setUsuariosLogados] = useState([]);
     const [dadosCards, setDadosCards] = useState([]);
-
     // Função para calcular o tempo de espera
     const calcularTempoEspera = useCallback((horaInicio) => {
         if (!horaInicio) return '00:00:00';
-
         if (typeof horaInicio === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(horaInicio)) {
             const [horas, minutos, segundos] = horaInicio.split(':').map(Number);
             const agora = new Date();
             const inicio = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), horas, minutos, segundos);
-
             const diferenca = Math.floor((agora - inicio) / 1000);
             if (diferenca < 0) return '00:00:00';
-
             const horasCalculadas = String(Math.floor(diferenca / 3600)).padStart(2, '0');
             const minutosCalculados = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
             const segundosCalculados = String(diferenca % 60).padStart(2, '0');
-
             return `${horasCalculadas}:${minutosCalculados}:${segundosCalculados}`;
         }
-
         const agora = new Date();
         const inicio = new Date(horaInicio);
         if (isNaN(inicio)) return '00:00:00';
-
         const diferenca = Math.floor((agora - inicio) / 1000);
         const horas = String(Math.floor(diferenca / 3600)).padStart(2, '0');
         const minutos = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
         const segundos = String(diferenca % 60).padStart(2, '0');
-
         return `${horas}:${minutos}:${segundos}`;
     }, []);
-
     const calcularTempoDecorrido = (horaInicio) => {
         if (!horaInicio) return "00:00:00";
-
         if (typeof horaInicio === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(horaInicio)) {
             const [horas, minutos, segundos] = horaInicio.split(':').map(Number);
             const agora = new Date();
             const inicio = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), horas, minutos, segundos);
-
             const diferenca = Math.floor((agora - inicio) / 1000);
             if (diferenca < 0) return '00:00:00';
-
             const horasCalculadas = String(Math.floor(diferenca / 3600)).padStart(2, '0');
             const minutosCalculados = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
             const segundosCalculados = String(diferenca % 60).padStart(2, '0');
-
             return `${horasCalculadas}:${minutosCalculados}:${segundosCalculados}`;
         }
-
         const inicio = new Date(horaInicio).getTime();
         const agora = new Date().getTime();
         const diferenca = Math.floor((agora - inicio) / 1000);
-
         const horas = String(Math.floor(diferenca / 3600)).padStart(2, '0');
         const minutos = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
         const segundos = String(diferenca % 60).padStart(2, '0');
-
         return `${horas}:${minutos}:${segundos}`;
     };
-
     // Função para tratar os dados recebidos
     const tratarDados = useCallback((dados) => {
         return dados.map((usuario) => ({
@@ -86,8 +69,6 @@ const ManagerView = ({ baseUrl }) => {
             status: usuario.nome_suporte ? 1 : 0
         }));
     }, [calcularTempoEspera]);
-
-
     // Atualizar o tempo de atendimento a cada segundo
     useEffect(() => {
         const interval = setInterval(() => {
@@ -99,20 +80,17 @@ const ManagerView = ({ baseUrl }) => {
 
         return () => clearInterval(interval);
     }, []);
-
     const processarDadosLogados = (dados) => {
-        console.log(dados)
         if (dados) {
             return dados.map((usuario) => ({
                 ...usuario,
-                fila: usuario.fila.split(','), // Transforma a string em array
-                mcdu: usuario.mcdu.split(','), // Transforma a string em array
-                segmento: usuario.segmento.split(','), // Transforma a string em array
+                fila: [...new Set(usuario.fila.split(','))], // Remove duplicatas
+                mcdu: [...new Set(usuario.mcdu.split(','))], // Remove duplicatas
+                segmento: [...new Set(usuario.segmento.split(','))], // Remove duplicatas
             }));
         }
 
     };
-
     const usuariosFiltrados = useCallback((dados, segmentosSelecionados, filasSelecionadas) => {
         return dados
             .filter((usuario) => {
@@ -137,7 +115,6 @@ const ManagerView = ({ baseUrl }) => {
                 status: 'success',
             }));
     }, []);
-
     // Consulta os Logados a cada 5 minutos
     useEffect(() => {
         const consultarLogados = () => {
@@ -149,16 +126,12 @@ const ManagerView = ({ baseUrl }) => {
                 }
             });
         };
-
         consultarLogados();
-
         const interval = setInterval(() => {
             consultarLogados();
         }, 300000);
-
         return () => clearInterval(interval);
     }, [segmentosSelecionados, filasSelecionadas, usuariosFiltrados]);
-
     // Consulta os chamados iniciais e trata os dados
     useEffect(() => {
         const atualizarDados = () => {
@@ -169,16 +142,13 @@ const ManagerView = ({ baseUrl }) => {
                 }
             });
         };
-
         atualizarDados();
-
         const interval = setInterval(() => {
             atualizarDados();
         }, 1000);
 
         return () => clearInterval(interval);
     }, [tratarDados]);
-
     // Buscar as filas disponíveis ao carregar o componente
     useEffect(() => {
         const fetchFilas = async () => {
@@ -195,15 +165,12 @@ const ManagerView = ({ baseUrl }) => {
                 console.error('Erro ao buscar filas:', error);
             }
         };
-
         fetchFilas();
     }, [baseUrl]);
-
     // Atualizar os dados filtrados com base nos filtros selecionados
     useEffect(() => {
         const filtrarDados = () => {
             let dados = [...dadosTabela];
-
             // Filtro por segmentos
             if (segmentosSelecionados.length > 0) {
                 const segmentosValores = segmentosSelecionados.map((s) => s.value);
@@ -211,16 +178,13 @@ const ManagerView = ({ baseUrl }) => {
                     filas.some((f) => segmentosValores.includes(f.segmento) && f.fila === item.fila)
                 );
             }
-
             // Filtro por filas
             if (filasSelecionadas.length > 0) {
                 const filasValores = filasSelecionadas.map((f) => f.value);
                 dados = dados.filter((item) => filasValores.includes(item.fila));
             }
-
             setDadosFiltrados(dados);
         };
-
         filtrarDados();
     }, [segmentosSelecionados, filasSelecionadas, dadosTabela, filas]);
 
@@ -228,7 +192,6 @@ const ManagerView = ({ baseUrl }) => {
     const segmentosOptions = [
         ...new Set(filas.map((f) => f.segmento)),
     ].map((segmento) => ({ value: segmento, label: segmento }));
-
     // Obter opções de filas filtradas com base no(s) segmento(s) selecionado(s)
     const filasOptions = filas
         .filter((f) =>
@@ -239,7 +202,6 @@ const ManagerView = ({ baseUrl }) => {
             value: f.fila,
             label: f.fila,
         }));
-
     useEffect(() => {
         const atualizarDadosCards = () => {
             socket.emit('cards_dashboard', (response) => {
@@ -248,21 +210,18 @@ const ManagerView = ({ baseUrl }) => {
                 }
             });
         };
-
         atualizarDadosCards();
+        const interval = setInterval(() => {
+            atualizarDadosCards();
+        }, 60000);
 
-        // const interval = setInterval(() => {
-        //     atualizarDadosCards();
-        // }, 1000);
-
-        // return () => clearInterval(interval);
+        return () => clearInterval(interval);
     }, []);
 
     return (
         <div className="manager-view">
             {/* Cards do Dashboard */}
             <CardsDashboard dados={dadosCards} />
-
             {/* Filtros de Segmento e Fila */}
             <div className="filters">
                 <div className="filter">
