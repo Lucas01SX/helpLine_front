@@ -12,6 +12,15 @@
     }
 }
 
+
+.aval-card {
+    padding: 10px;
+    background-color: #022954;
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 10px;
+}
+
 .cardOperador{
     width: 100%;
     display: flex;

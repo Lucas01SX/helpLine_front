@@ -3,12 +3,17 @@ import TabelaSuporte from '../../modules/TabelaSuporte';
 import ModalSuporte from '../../modules/ModalSuporte';
 import './App.css';
 import socket from '../../context/Socket';
+import BlocoSuporte from '../../modules/BlocoSuporte';
 
 const SuporteView = ({ user, baseUrl }) => {
     const [chamados, setChamados] = useState([]);
     const [chamadoSelecionado, setChamadoSelecionado] = useState(null);
     const [filasHabilitadas, setFilasHabilitadas] = useState([]);
     const matriculaLocal = user ? user.matricula : ''
+
+    const [mostrarBlocoSuporte, setMostrarBlocoSuporte] = useState(false);
+    const [chamadoEncerrado, setChamadoEncerrado] = useState(null);
+
 
     const calcularTempoEspera = useCallback((horaInicio) => {
         if (!horaInicio) return '00:00:00'; // Verificação defensiva
@@ -51,7 +56,8 @@ const SuporteView = ({ user, baseUrl }) => {
     useEffect(() => {
         const fetchFilasHabilitadas = async () => {
             try {
-                const response = await fetch(`${baseUrl}/suporte-api/api/filas/consulta/skill`, {
+                // const response = await fetch(`${baseUrl}/suporte-api/api/filas/consulta/skill`, {
+                const response = await fetch(`http://localhost:3000/api/filas/consulta/skill`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ matricula: matriculaLocal }),
@@ -226,14 +232,49 @@ const SuporteView = ({ user, baseUrl }) => {
             });
 
             setChamados((prevChamados) => prevChamados.filter((ch) => ch.id !== chamado.id));
+            setChamadoEncerrado(chamado)
+            //setChamadoSelecionado(null);
+            setMostrarBlocoSuporte(true);
             setChamadoSelecionado(null);
         }
     };
+
+    const handleSalvarBloco = (texto) => {
+        
+        if(chamadoEncerrado){
+
+            setChamados((prevChamados) => prevChamados.filter((ch) => ch.id !== chamadoEncerrado.id));
+            
+            //console.log('Chamado recebido:', chamadoEncerrado)
+            const now = new Date();
+            const hora_atual = now.toTimeString().split(' ')[0];
+            socket.emit("demanda_suporte", {
+                idSuporte: chamadoEncerrado.id,
+                horario_descricao: hora_atual,
+                descricao: texto
+            });
+        //console.log("info passada", chamadoEncerrado.id, " - ", hora_atual, " - ", texto)
+
+        }
+        
+        else{
+            console.error("Erro no cadastro de descrição de atendimento")
+        }
+
+        setMostrarBlocoSuporte(false);
+        setChamadoEncerrado(null)
+    }
+
+
+
+
+
 
     return (
         <div className="suporte-view">
             <TabelaSuporte chamados={chamados} onAtenderSuporte={handleAtenderSuporte} />
             <ModalSuporte chamado={chamadoSelecionado} onEncerrar={handleEncerrar} />
+            {mostrarBlocoSuporte && <BlocoSuporte onSalvar={handleSalvarBloco}/>}
         </div>
     );
 };

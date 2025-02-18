@@ -1,0 +1,43 @@
+.star-rating {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.star-rating button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 2rem;
+  color: #ccc;
+  padding: 0; /* Remove o padding para evitar quadrados ao redor das estrelas */
+}
+
+.star-rating button.on .star {
+  color: gold;
+}
+
+.star-rating button.off .star {
+  color: #ccc;
+}
+.modal-content-rating {
+  background-color: #022954;
+  padding: 30px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  color: white;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.rating-button{
+  margin-top: 15px;
+  background:#3dad5b;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
