@@ -1,97 +1,80 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import {
-  CRow,
-  CCol,
-  CDropdown,
-  CDropdownMenu,
-  CDropdownItem,
-  CDropdownToggle,
-  CWidgetStatsA,
-} from '@coreui/react';
+import { CRow, CCol, CWidgetStatsA } from '@coreui/react';
 import { getStyle } from '@coreui/utils';
-import { CChartBar, CChartLine } from '@coreui/react-chartjs';
-import CIcon from '@coreui/icons-react';
-import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons';
-import ChartDataLabels from 'chartjs-plugin-datalabels'; // Importe o plugin
+import { CChartLine, CChartBar } from '@coreui/react-chartjs';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const WidgetsDropdown = ({ className, dados }) => {
   const widgetChartRef1 = useRef(null);
   const widgetChartRef2 = useRef(null);
-  const { resultado = [], total = {} } = dados ?? {};  
 
-  const totalLogados = total?.logados ?? 0;
-  const totalAcionamentos = total?.acionamentos ?? 0;
-  const totalTempoMedioEspera = total?.tempoMedioEspera ?? 0;
-  const totalChamadosCancelados = total?.chamadosCancelados ?? 0;
+  // Verifica se os dados são um array e têm a estrutura esperada
+  const { resultado = [], total = {}, logados = [], tempoMedioGlobal = 0, tempoMedioPorHora = [] } = Array.isArray(dados) ? { resultado: dados, total: {}, logados: [] } : dados ?? {};
 
+  // Extrair os valores de logados por hora
+  const labels = resultado.map((item) => typeof item.horario === 'string' ? item.horario : '');
+  const logadosData = logados.map((item) => item.usuarios?.length || 0);
+
+  // Contar o total de logados na última hora
+  const totalLogados = logados.length > 0 ? logados[logados.length - 1].usuarios?.length || 0 : 0;
+
+  // Extrair os valores de acionamentos e chamados cancelados
+  const acionamentosData = resultado.map((item) => {
+    let totalAcionamentos = 0;
+    Object.values(item.segmentos).forEach(segmento => {
+      Object.values(segmento.filas).forEach(fila => {
+        totalAcionamentos += fila.acionamentos || 0;
+      });
+    });
+    return totalAcionamentos;
+  });
+
+  const chamadosCanceladosData = resultado.map((item) => {
+    let totalChamadosCancelados = 0;
+    Object.values(item.segmentos).forEach(segmento => {
+      Object.values(segmento.filas).forEach(fila => {
+        totalChamadosCancelados += fila.chamadosCancelados || 0;
+      });
+    });
+    return totalChamadosCancelados;
+  });
+
+  // Outros totais (acionamentos, chamados cancelados)
+  const totalAcionamentos = acionamentosData.reduce((acc, curr) => acc + curr, 0);
+  const totalChamadosCancelados = chamadosCanceladosData.reduce((acc, curr) => acc + curr, 0);
+
+  // Converter tempo médio de espera para HH:MM:SS
   const converterParaHHMMSS = (tempoEmMinutos) => {
     const horas = Math.floor(tempoEmMinutos / 60);
     const minutos = Math.floor(tempoEmMinutos % 60);
     const segundos = Math.floor((tempoEmMinutos - Math.floor(tempoEmMinutos)) * 60);
-    
     return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
   };
-  // Preparar os dados para os gráficos
-  const labels = resultado.map((item) => item.hora);
-  const logadosData = resultado.map((item) => item.logados);
-  const acionamentosData = resultado.map((item) => item.acionamentos);
-  const tempoMedioEsperaData = resultado.map((item) => item.tempoMedioEspera);
-  const chamadosCanceladosData = resultado.map((item) => item.chamadosCancelados);  
 
-  const formattedLabels = labels.map((label) => {
-    // Converte cada label de hora (ex. '07:00:00') para 'HH:mm'
+  // Formatar labels para exibição
+  const formattedLabels = Array.isArray(labels) ? labels.map((label) => {
+    if (typeof label !== 'string') return ''; // Garante que label seja uma string
     const timeParts = label.split(':');
     return timeParts.length > 1 ? `${timeParts[0]}:${timeParts[1]}` : label;
-  });
+  }) : [];
 
-  useEffect(() => {
-    document.documentElement.addEventListener('ColorSchemeChange', () => {
-      if (widgetChartRef1.current) {
-        setTimeout(() => {
-          widgetChartRef1.current.data.datasets[0].pointBackgroundColor = getStyle('--cui-primary');
-          widgetChartRef1.current.update();
-        });
-      }
-
-      if (widgetChartRef2.current) {
-        setTimeout(() => {
-          widgetChartRef2.current.data.datasets[0].pointBackgroundColor = getStyle('--cui-info');
-          widgetChartRef2.current.update();
-        });
-      }
-    });
-  }, [widgetChartRef1, widgetChartRef2]);
+  // Dados do tempo médio de espera por hora
+  const tempoMedioEsperaData = tempoMedioPorHora.map((hora) => hora.tempoMedio || 0);
 
   return (
     <CRow className={className} xs={{ gutter: 4 }}>
+      {/* Gráfico de Logados */}
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="primary"
-          value={
-            <>
-              {totalLogados}
-            </>
-          }
+          value={totalLogados}
           title="Logados"
-          // action={
-          //   <CDropdown alignment="end">
-          //     <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-          //       <CIcon icon={cilOptions} />
-          //     </CDropdownToggle>
-          //     <CDropdownMenu>
-          //       <CDropdownItem>Action</CDropdownItem>
-          //       <CDropdownItem>Another action</CDropdownItem>
-          //       <CDropdownItem>Something else here...</CDropdownItem>
-          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
-          //     </CDropdownMenu>
-          //   </CDropdown>
-          // }
           chart={
             <CChartLine
               ref={widgetChartRef1}
               className="mt-3 mx-3"
-              style={{ height: '100px' }}
+              style={{ height: '150px' }}
               data={{
                 labels: formattedLabels,
                 datasets: [
@@ -110,9 +93,7 @@ const WidgetsDropdown = ({ className, dados }) => {
               }}
               options={{
                 plugins: {
-                  legend: { 
-                    display: false,
-                  },
+                  legend: { display: false },
                   datalabels: {
                     color: '#fff',
                     anchor: 'end',
@@ -123,8 +104,10 @@ const WidgetsDropdown = ({ className, dados }) => {
                     padding: 2,
                     formatter: (value) => value,
                   },
-                  tooltip: {enabled: true,},
+                  tooltip: { enabled: false },
                 },
+                hover: { mode: null },
+                interaction: { mode: 'none' },
                 maintainAspectRatio: false,
                 responsive: true,
                 scales: {
@@ -140,22 +123,26 @@ const WidgetsDropdown = ({ className, dados }) => {
                       formattedLabels,
                     },
                   },
-                  y: {
-                    display: false,
+                  y: { display: false },
+                },
+                elements: {
+                  point: {
+                    radius: 2.6,
+                    hitRadius: 0,
+                    hoverRadius: 0,
                   },
                 },
-                elements: {enabled: false},
                 layout: {
-                  padding: { left: 20, right: 20, top: 20, bottom: 20 },
+                  padding: { left: 20, right: 20, top: 20, bottom: 10 },
                 },
               }}
               plugins={[ChartDataLabels]}
             />
-
           }
         />
       </CCol>
 
+      {/* Gráfico de Acionamentos */}
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="info"
@@ -165,9 +152,9 @@ const WidgetsDropdown = ({ className, dados }) => {
             <CChartLine
               ref={widgetChartRef2}
               className="mt-3 mx-3"
-              style={{ height: '100px' }}
+              style={{ height: '150px' }}
               data={{
-                labels: formattedLabels, // Usando os mesmos labels formatados
+                labels: formattedLabels,
                 datasets: [
                   {
                     label: 'Acionamentos',
@@ -184,12 +171,8 @@ const WidgetsDropdown = ({ className, dados }) => {
               }}
               options={{
                 plugins: {
-                  legend: { 
-                    display: false,
-                  },
-                  tooltip: {
-                    enabled: false, // Desativa o tooltip
-                  },
+                  legend: { display: false },
+                  tooltip: { enabled: false },
                   datalabels: {
                     color: '#fff',
                     anchor: 'end',
@@ -216,16 +199,14 @@ const WidgetsDropdown = ({ className, dados }) => {
                       formattedLabels,
                     },
                   },
-                  y: {
-                    display: false,
-                  },
+                  y: { display: false },
                 },
                 elements: {
                   line: { borderWidth: 1.4, tension: 0.34 },
                   point: { radius: 2.6, hitRadius: 10, hoverRadius: 4 },
                 },
                 layout: {
-                  padding: { left: 20, right: 20, top: 20, bottom: 20 },
+                  padding: { left: 20, right: 20, top: 20, bottom: 10 },
                 },
               }}
               plugins={[ChartDataLabels]}
@@ -234,15 +215,16 @@ const WidgetsDropdown = ({ className, dados }) => {
         />
       </CCol>
 
+      {/* Gráfico de Tempo Médio de Espera */}
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="warning"
-          value={converterParaHHMMSS(totalTempoMedioEspera)}
+          value={converterParaHHMMSS(tempoMedioGlobal)}
           title="Tempo Médio de Espera"
           chart={
             <CChartLine
               className="mt-3"
-              style={{ height: '100px' }}
+              style={{ height: '150px' }}
               data={{
                 labels: formattedLabels,
                 datasets: [
@@ -260,12 +242,8 @@ const WidgetsDropdown = ({ className, dados }) => {
               }}
               options={{
                 plugins: {
-                  legend: { 
-                    display: false,
-                  },
-                  tooltip: {
-                    enabled: false, // Desativa o tooltip
-                  },
+                  legend: { display: false },
+                  tooltip: { enabled: false },
                   datalabels: {
                     color: '#fff',
                     anchor: 'end',
@@ -275,6 +253,7 @@ const WidgetsDropdown = ({ className, dados }) => {
                     clamp: true,
                     padding: 2,
                     formatter: (value) => converterParaHHMMSS(value),
+                    rotation: -65,
                   },
                 },
                 maintainAspectRatio: false,
@@ -292,16 +271,14 @@ const WidgetsDropdown = ({ className, dados }) => {
                       formattedLabels,
                     },
                   },
-                  y: {
-                    display: false,
-                  },
+                  y: { display: false,},
                 },
                 elements: {
                   line: { borderWidth: 1.4, tension: 0.34 },
                   point: { radius: 2.6, hitRadius: 10, hoverRadius: 4 },
                 },
                 layout: {
-                  padding: { left: 30, right: 30, top: 20, bottom: 20 },
+                  padding: { left: 30, right: 30, top: 60, bottom: 10 },
                 },
               }}
               plugins={[ChartDataLabels]}
@@ -310,6 +287,7 @@ const WidgetsDropdown = ({ className, dados }) => {
         />
       </CCol>
 
+      {/* Gráfico de Chamados Cancelados */}
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="danger"
@@ -317,72 +295,53 @@ const WidgetsDropdown = ({ className, dados }) => {
           title="Abandonadas"
           chart={
             <CChartBar
-            className="mt-3 mx-3"
-            style={{ height: '100px' }}
-            data={{
-              labels: formattedLabels, // Usando os mesmos labels formatados
-              datasets: [
-                {
-                  label: 'Chamados Cancelados',
-                  backgroundColor: 'rgba(255,255,255,.2)',
-                  borderColor: 'rgba(255,255,255,.55)',
-                  data: chamadosCanceladosData,
-                  barPercentage: 0.6,
-                },
-              ],
-            }}
-            options={{
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  display: false,
-                },
-                tooltip: {
-                  enabled: false, // Desativa o tooltip
-                },
-                datalabels: {
-                  color: '#fff',
-                  anchor: 'center',
-                  align: 'center',
-                  offset: 0,
-                  formatter: (value) => value,
-                },
-              },
-              scales: {
-                x: {
-                  grid: {
-                    display: false, // Desativa as linhas de grade do eixo X
+              className="mt-3 mx-3"
+              style={{ height: '150px' }}
+              data={{
+                labels: formattedLabels,
+                datasets: [
+                  {
+                    label: 'Chamados Cancelados',
+                    backgroundColor: 'rgba(255,255,255,.2)',
+                    borderColor: 'rgba(255,255,255,.55)',
+                    data: chamadosCanceladosData,
+                    barPercentage: 0.6,
                   },
-                  ticks: {
-                    display: true, // Garante que os ticks do eixo X sejam exibidos
-                    color: '#fff', // Cor branca para os rótulos
-                    autoSkip: false, // Desativa a omissão automática de rótulos
-                    maxRotation: 0,
-                    minRotation: 0,
-                    formattedLabels,
+                ],
+              }}
+              options={{
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { display: false },
+                  tooltip: { enabled: false },
+                  datalabels: {
+                    color: '#fff',
+                    anchor: 'center',
+                    align: 'center',
+                    offset: 0,
+                    formatter: (value) => value,
                   },
                 },
-                y: {
-                  display: false, // Desabilita o eixo Y
-                  grid: {
-                    display: false,
+                scales: {
+                  x: {
+                    grid: { display: false },
+                    ticks: {
+                      display: true,
+                      color: '#fff',
+                      autoSkip: false,
+                      maxRotation: 0,
+                      minRotation: 0,
+                      formattedLabels,
+                    },
                   },
-                  ticks: {
-                    display: false, // Não exibe os ticks do eixo Y
-                  },
+                  y: { display: false },
                 },
-              },
-              layout: {
-                padding: {
-                  left: 20, // Adiciona padding à esquerda
-                  right: 20, // Adiciona padding à direita
+                layout: {
+                  padding: { left: 20, right: 20 ,top: 20, bottom: 10 },
                 },
-              },
-            }}
-            plugins={[ChartDataLabels]} // Adiciona o plugin ao gráfico
-          />
-          
-          
+              }}
+              plugins={[ChartDataLabels]}
+            />
           }
         />
       </CCol>
@@ -392,7 +351,7 @@ const WidgetsDropdown = ({ className, dados }) => {
 
 WidgetsDropdown.propTypes = {
   className: PropTypes.string,
-  dados: PropTypes.array.isRequired,
+  dados: PropTypes.object.isRequired,
 };
 
 export default WidgetsDropdown;
