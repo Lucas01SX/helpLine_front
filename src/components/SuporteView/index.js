@@ -56,8 +56,8 @@ const SuporteView = ({ user, baseUrl }) => {
     useEffect(() => {
         const fetchFilasHabilitadas = async () => {
             try {
-                // const response = await fetch(`${baseUrl}/suporte-api/api/filas/consulta/skill`, {
-                const response = await fetch(`http://localhost:3000/api/filas/consulta/skill`, {
+                const response = await fetch(`${baseUrl}/suporte-api/api/filas/consulta/skill`, {
+                // const response = await fetch(`http://localhost:3000/api/filas/consulta/skill`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ matricula: matriculaLocal }),

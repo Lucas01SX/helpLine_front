@@ -10,7 +10,7 @@ const StarRating = ({ onSalvar }) => {
 
   const handleSave = () => {
     onSalvar(rating);
-    console.log("Nota para o atendimento: ",rating)
+    // console.log("Nota para o atendimento: ",rating)
   };
 
   return (

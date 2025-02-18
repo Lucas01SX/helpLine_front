@@ -7,7 +7,7 @@ const BlocoSuporte = ({ onSalvar }) => {
 
     const handleSave = () => {
         onSalvar(texto);
-        console.log("Info repassada:",texto)
+        // console.log("Info repassada:",texto)
     };
     return (
         <div className="modal-overlay">

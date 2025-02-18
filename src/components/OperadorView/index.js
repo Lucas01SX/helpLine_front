@@ -26,8 +26,8 @@ const OperadorView = ({ user, baseUrl }) => {
         const fetchFilas = async () => {
             try {
 
-                // const response = await fetch(`${baseUrl}/suporte-api/api/filas/gerais`);
-                const response = await fetch(`http://localhost:3000/api/filas/gerais`);
+                const response = await fetch(`${baseUrl}/suporte-api/api/filas/gerais`);
+                // const response = await fetch(`http://localhost:3000/api/filas/gerais`);
                 const data = await response.json();
 
                 if (Array.isArray(data.filas)) {
@@ -53,7 +53,7 @@ const OperadorView = ({ user, baseUrl }) => {
             try {
                 if (suporte && suporte.gerarSuporte && response.chamado.id_suporte === suporte.gerarSuporte.id_suporte) {
                     if (response.action === 'finalizar') {
-                        console.log('Suporte finalizado');
+                        // console.log('Suporte finalizado');
                         setArmazenaSuporte(suporte)
                         setSuporte(null);
                         setBotaoSolicitarVisivel(true); // Reexibe o botão "Solicitar Suporte"
@@ -65,12 +65,12 @@ const OperadorView = ({ user, baseUrl }) => {
                     }
                 } else if (suporte && suporte.gerarSuporte && response.chamado.suporte.id_suporte === suporte.gerarSuporte.id_suporte) {
                     if (response.action === 'atender') {
-                        console.log('Chamado atendido');
+                        // console.log('Chamado atendido');
                         setBotaoCancelarDesabilitado(true); // Substitui o botão por "Em Atendimento"
                     }
                 } else if (suporte && suporte.gerarSuporte && response.chamado.gerarSuporte.id_suporte === suporte.gerarSuporte.id_suporte) {
                     if (response.action === 'abrir') {
-                        console.log('Suporte solicitado');
+                        // console.log('Suporte solicitado');
                         setBotaoSolicitarVisivel(false); // Oculta o botão "Solicitar Suporte"
                         setCardVisivel(true); // Exibe o card de suporte
                         setBotaoCancelarDesabilitado(false)
@@ -164,7 +164,7 @@ const OperadorView = ({ user, baseUrl }) => {
                 avaliacao: rating
             });
             
-            console.log('Suporte:',armazenaSuporte.idCancelamento, "horario:", hora_atual, 'recebeu nota:', rating);
+            // console.log('Suporte:',armazenaSuporte.idCancelamento, "horario:", hora_atual, 'recebeu nota:', rating);
             setMostrarAvaliador(false);
             setArmazenaSuporte(null)
         }
