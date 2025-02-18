@@ -9,36 +9,51 @@ const WidgetsDropdown = ({ className, dados }) => {
   const widgetChartRef1 = useRef(null);
   const widgetChartRef2 = useRef(null);
 
-  // Verifica se os dados são um array e têm a estrutura esperada
-  const { resultado = [], total = {}, logados = [], tempoMedioGlobal = 0, tempoMedioPorHora = [] } = Array.isArray(dados) ? { resultado: dados, total: {}, logados: [] } : dados ?? {};
+  // Verifica se os dados são válidos e extrai as propriedades necessárias
+  const { resultado = [], total = {}, logados = [], tempoMedioGlobal = 0, tempoMedioPorHora = [] } = dados ?? {};
 
   // Extrair os valores de logados por hora
-  const labels = resultado.map((item) => typeof item.horario === 'string' ? item.horario : '');
-  const logadosData = logados.map((item) => item.usuarios?.length || 0);
+  const labels = Array.isArray(resultado) ? resultado.map((item) => {
+    return item && typeof item.horario === 'string' ? item.horario : '';
+  }) : [];
+
+  const logadosData = Array.isArray(logados) ? logados.map((item) => {
+    return item && Array.isArray(item.usuarios) ? item.usuarios.length : 0;
+  }) : [];
 
   // Contar o total de logados na última hora
-  const totalLogados = logados.length > 0 ? logados[logados.length - 1].usuarios?.length || 0 : 0;
+  const totalLogados = logados.length > 0 && Array.isArray(logados[logados.length - 1].usuarios) 
+    ? logados[logados.length - 1].usuarios.length 
+    : 0;
 
   // Extrair os valores de acionamentos e chamados cancelados
-  const acionamentosData = resultado.map((item) => {
+  const acionamentosData = Array.isArray(resultado) ? resultado.map((item) => {
     let totalAcionamentos = 0;
-    Object.values(item.segmentos).forEach(segmento => {
-      Object.values(segmento.filas).forEach(fila => {
-        totalAcionamentos += fila.acionamentos || 0;
+    if (item && item.segmentos && typeof item.segmentos === 'object') {
+      Object.values(item.segmentos).forEach(segmento => {
+        if (segmento && segmento.filas && typeof segmento.filas === 'object') {
+          Object.values(segmento.filas).forEach(fila => {
+            totalAcionamentos += fila.acionamentos || 0;
+          });
+        }
       });
-    });
+    }
     return totalAcionamentos;
-  });
+  }) : [];
 
-  const chamadosCanceladosData = resultado.map((item) => {
+  const chamadosCanceladosData = Array.isArray(resultado) ? resultado.map((item) => {
     let totalChamadosCancelados = 0;
-    Object.values(item.segmentos).forEach(segmento => {
-      Object.values(segmento.filas).forEach(fila => {
-        totalChamadosCancelados += fila.chamadosCancelados || 0;
+    if (item && item.segmentos && typeof item.segmentos === 'object') {
+      Object.values(item.segmentos).forEach(segmento => {
+        if (segmento && segmento.filas && typeof segmento.filas === 'object') {
+          Object.values(segmento.filas).forEach(fila => {
+            totalChamadosCancelados += fila.chamadosCancelados || 0;
+          });
+        }
       });
-    });
+    }
     return totalChamadosCancelados;
-  });
+  }) : [];
 
   // Outros totais (acionamentos, chamados cancelados)
   const totalAcionamentos = acionamentosData.reduce((acc, curr) => acc + curr, 0);
@@ -54,13 +69,13 @@ const WidgetsDropdown = ({ className, dados }) => {
 
   // Formatar labels para exibição
   const formattedLabels = Array.isArray(labels) ? labels.map((label) => {
-    if (typeof label !== 'string') return ''; // Garante que label seja uma string
+    if (typeof label !== 'string' || label === null || label === undefined) return ''; // Garante que label seja uma string válida
     const timeParts = label.split(':');
     return timeParts.length > 1 ? `${timeParts[0]}:${timeParts[1]}` : label;
   }) : [];
 
   // Dados do tempo médio de espera por hora
-  const tempoMedioEsperaData = tempoMedioPorHora.map((hora) => hora.tempoMedio || 0);
+  const tempoMedioEsperaData = Array.isArray(tempoMedioPorHora) ? tempoMedioPorHora.map((hora) => hora.tempoMedio || 0) : [];
 
   return (
     <CRow className={className} xs={{ gutter: 4 }}>
@@ -120,7 +135,6 @@ const WidgetsDropdown = ({ className, dados }) => {
                       autoSkip: false,
                       maxRotation: 0,
                       minRotation: 0,
-                      formattedLabels,
                     },
                   },
                   y: { display: false },
@@ -196,7 +210,6 @@ const WidgetsDropdown = ({ className, dados }) => {
                       autoSkip: false,
                       maxRotation: 0,
                       minRotation: 0,
-                      formattedLabels,
                     },
                   },
                   y: { display: false },
@@ -268,10 +281,9 @@ const WidgetsDropdown = ({ className, dados }) => {
                       autoSkip: false,
                       maxRotation: 0,
                       minRotation: 0,
-                      formattedLabels,
                     },
                   },
-                  y: { display: false,},
+                  y: { display: false },
                 },
                 elements: {
                   line: { borderWidth: 1.4, tension: 0.34 },
@@ -331,13 +343,12 @@ const WidgetsDropdown = ({ className, dados }) => {
                       autoSkip: false,
                       maxRotation: 0,
                       minRotation: 0,
-                      formattedLabels,
                     },
                   },
                   y: { display: false },
                 },
                 layout: {
-                  padding: { left: 20, right: 20 ,top: 20, bottom: 10 },
+                  padding: { left: 20, right: 20, top: 20, bottom: 10 },
                 },
               }}
               plugins={[ChartDataLabels]}
