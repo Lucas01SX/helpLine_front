@@ -3,13 +3,13 @@ import { io } from 'socket.io-client';
 
 // Determina se está na rede 1 ou não
 const isRede1 = window.location.hostname === '172.32.1.81' || window.location.hostname === 'localhost';
-// const socketHost = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
-const socketHost = isRede1 ? 'http://pr7399et2850:3000' : '';
+const socketHost = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
+// const socketHost = isRede1 ? 'http://pr7399et2850:3000' : '';
 
 // Configura o socket com o host dinâmico
 const socket = io(socketHost, {
-    path: '/socket.io',
-    // path: '/suporte-api/socket.io',
+    // path: '/socket.io',
+    path: '/suporte-api/socket.io',
     //path: '/suporte-api-dev/socket.io',
     transports: ['polling'], // ou ['websocket'] se for aplicável
 });
