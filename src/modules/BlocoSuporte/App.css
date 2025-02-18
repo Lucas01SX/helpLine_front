@@ -1,0 +1,29 @@
+textarea{
+    width:600px;
+    height:150px;
+    font-size:15px;
+    padding:10px;
+    border-radius: 5px;
+    
+}
+.modal-bloco{
+    background: #022954;
+    padding: 30px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    color: white;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.button-bloco{
+    margin-top: 15px;
+    background:#3dad5b;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}

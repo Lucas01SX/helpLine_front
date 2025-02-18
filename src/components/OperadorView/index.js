@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { CFormSelect, CButton, CForm } from '@coreui/react';
+import StarRating from '../../modules/AvaliacaoSuporte';
 import CardSuporte from '../../modules/CardSuporte';
 import Icon from '../../assets/img/central-de-ajuda.png';
 import './App.css';
 import socket from '../../context/Socket';
+
 
 
 const OperadorView = ({ user, baseUrl }) => {
@@ -15,8 +17,8 @@ const OperadorView = ({ user, baseUrl }) => {
     const [botaoSolicitarVisivel, setBotaoSolicitarVisivel] = useState(true); // Controle do botão "Solicitar Suporte"
     const [cardVisivel, setCardVisivel] = useState(false); // Controle do card de suporte
     const [botaoCancelarDesabilitado, setBotaoCancelarDesabilitado] = useState(false); // Desabilitar botão "Cancelar"
-
-
+    const [mostrarAvaliador, setMostrarAvaliador] = useState(false);
+    const [armazenaSuporte, setArmazenaSuporte] = useState(null);
 
 
     // Buscar as filas disponíveis ao carregar o componente
@@ -24,7 +26,8 @@ const OperadorView = ({ user, baseUrl }) => {
         const fetchFilas = async () => {
             try {
 
-                const response = await fetch(`${baseUrl}/suporte-api/api/filas/gerais`);
+                // const response = await fetch(`${baseUrl}/suporte-api/api/filas/gerais`);
+                const response = await fetch(`http://localhost:3000/api/filas/gerais`);
                 const data = await response.json();
 
                 if (Array.isArray(data.filas)) {
@@ -51,10 +54,14 @@ const OperadorView = ({ user, baseUrl }) => {
                 if (suporte && suporte.gerarSuporte && response.chamado.id_suporte === suporte.gerarSuporte.id_suporte) {
                     if (response.action === 'finalizar') {
                         console.log('Suporte finalizado');
+                        setArmazenaSuporte(suporte)
                         setSuporte(null);
                         setBotaoSolicitarVisivel(true); // Reexibe o botão "Solicitar Suporte"
                         setCardVisivel(false); // Oculta o card de suporte
                         setBotaoCancelarDesabilitado(false)
+                        setMostrarAvaliador(true)
+                        
+                        
                     }
                 } else if (suporte && suporte.gerarSuporte && response.chamado.suporte.id_suporte === suporte.gerarSuporte.id_suporte) {
                     if (response.action === 'atender') {
@@ -83,7 +90,7 @@ const OperadorView = ({ user, baseUrl }) => {
     const handleSolicitarSuporte = async () => {
         if (!filaSelecionada) return;
 
-
+       
         setBotaoSolicitarVisivel(false)
         try {
             const now = new Date();
@@ -145,6 +152,23 @@ const OperadorView = ({ user, baseUrl }) => {
             console.error('Erro na requisição:', error);
         }
     };
+
+    const handleMostrarAvaliador = (rating) =>{
+        if(armazenaSuporte){
+            const now = new Date();
+            const hora_atual = now.toTimeString().split(' ')[0];
+            
+            socket.emit("avaliacao_suporte", {
+                idSuporte: armazenaSuporte.idCancelamento,
+                horario_avaliacao: hora_atual,
+                avaliacao: rating
+            });
+            
+            console.log('Suporte:',armazenaSuporte.idCancelamento, "horario:", hora_atual, 'recebeu nota:', rating);
+            setMostrarAvaliador(false);
+            setArmazenaSuporte(null)
+        }
+    }
 
     // Calcula o tempo de espera para exibição no card
     const calcularTempoEspera = useCallback(() => {
@@ -218,7 +242,7 @@ const OperadorView = ({ user, baseUrl }) => {
                     </CButton>
                 )}
             </div>
-
+            
             <CForm>
                 {cardVisivel && (
                     <CardSuporte
@@ -226,9 +250,16 @@ const OperadorView = ({ user, baseUrl }) => {
                         fila={suporte}
                         handleCancelarSuporte={handleCancelarSuporte}
                         botaoCancelarDesabilitado={botaoCancelarDesabilitado}
+                      
                     />
+               
                 )}
+             
             </CForm>
+            {mostrarAvaliador && <StarRating onSalvar={handleMostrarAvaliador}/>}
+
+
+            
         </div>
     );
 };
