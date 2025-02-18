@@ -47,40 +47,54 @@ const Dropdown = ({ user, onLogout }) => {
     const handleManagerClick = () => {
         navigate('/manager');
     };
+    const ROLE_PERMISSIONS = {
+        admins: [1031, 935, 14942, 15264, 828],
+        users: [574, 572, 15],
+    };
+    
+    const hasAdminAccess = ROLE_PERMISSIONS.admins.includes(codfuncao);
+    const hasUserAccess = ROLE_PERMISSIONS.users.includes(codfuncao);
 
     return (
         <CDropdown variant="nav-item">
-            <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
-                <CAvatar src={avatarImg} size="md" />
-            </CDropdownToggle>
-            <CDropdownMenu className="pt-0 c-dropdown-menu" placement="bottom-end">
-                {[1031, 935, 14942, 15264].includes(codfuncao) && (
-                    <>
-                        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2 header-dropdown">Account</CDropdownHeader>
-                        <CDropdownItem onClick={handleResetPasswordClick}>
-                            <CIcon icon={cilUser} className="me-2" />
-                            Reset Senha
-                        </CDropdownItem>
-                        <CDropdownDivider />
-                        <CDropdownHeader className="bg-body-secondary fw-semibold my-2 header-dropdown">Páginas</CDropdownHeader>
-                        <CDropdownItem onClick={handleSuporteClick}>
-                            <CIcon icon={cilUser} className="me-2" />
-                            Suporte
-                        </CDropdownItem>
-                        <CDropdownItem onClick={handleManagerClick}>
-                            <CIcon icon={cilUser} className="me-2" />
-                            Manager
-                        </CDropdownItem>
-                    </>
-                )}
-                <CDropdownDivider />
-                <CDropdownItem onClick={onLogout}>
-                    <CIcon icon={cilLockLocked} className="me-2" />
-                    Sair
-                </CDropdownItem>
-            </CDropdownMenu>
-            <Modal isOpen={isModalOpen} onClose={closeModal} onSubmit={handleMatriculaSubmit} />
-        </CDropdown>
+        <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
+            <CAvatar src={avatarImg} size="md" />
+        </CDropdownToggle>
+
+        <CDropdownMenu className="pt-0 c-dropdown-menu" placement="bottom-end">
+            {hasAdminAccess && (
+                <>
+                    <CDropdownHeader className="bg-body-secondary fw-semibold mb-2 header-dropdown">Account</CDropdownHeader>
+                    <CDropdownItem onClick={handleResetPasswordClick}>
+                        <CIcon icon={cilUser} className="me-2" />
+                        Reset Senha
+                    </CDropdownItem>
+                    <CDropdownDivider />
+                </>
+            )}
+            {(hasAdminAccess || hasUserAccess) && (
+                <>
+                    <CDropdownHeader className="bg-body-secondary fw-semibold my-2 header-dropdown">Páginas</CDropdownHeader>
+                    <CDropdownItem onClick={handleSuporteClick}>
+                        <CIcon icon={cilUser} className="me-2" />
+                        Suporte
+                    </CDropdownItem>
+                    <CDropdownItem onClick={handleManagerClick}>
+                        <CIcon icon={cilUser} className="me-2" />
+                        Manager
+                    </CDropdownItem>
+                    <CDropdownDivider />
+                </>
+            )}
+
+            <CDropdownItem onClick={onLogout}>
+                <CIcon icon={cilLockLocked} className="me-2" />
+                Sair
+            </CDropdownItem>
+        </CDropdownMenu>
+
+        <Modal isOpen={isModalOpen} onClose={closeModal} onSubmit={handleMatriculaSubmit} />
+    </CDropdown>
     );
 };
 

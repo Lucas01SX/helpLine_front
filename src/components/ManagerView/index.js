@@ -16,6 +16,12 @@ const ManagerView = ({ baseUrl }) => {
     const [dadosFiltrados, setDadosFiltrados] = useState([]);
     const [usuariosLogados, setUsuariosLogados] = useState([]);
     const [dadosCards, setDadosCards] = useState([]);
+    
+    const formatarHora = (hora) => {
+        if (!hora) return null;
+        return hora.split('.')[0]; // Remove a parte dos milissegundos
+    };
+
     // Função para calcular o tempo de espera
     const calcularTempoEspera = useCallback((horaInicio) => {
         if (!horaInicio) return '00:00:00';
@@ -60,6 +66,7 @@ const ManagerView = ({ baseUrl }) => {
         const segundos = String(diferenca % 60).padStart(2, '0');
         return `${horas}:${minutos}:${segundos}`;
     };
+
     // Função para tratar os dados recebidos
     const tratarDados = useCallback((dados) => {
         return dados.map((usuario) => ({
@@ -93,28 +100,111 @@ const ManagerView = ({ baseUrl }) => {
     };
     const usuariosFiltrados = useCallback((dados, segmentosSelecionados, filasSelecionadas) => {
         return dados
-            .filter((usuario) => {
-                // Filtro por segmentos
-                if (segmentosSelecionados.length > 0) {
-                    const segmentosValores = segmentosSelecionados.map((s) => s.value);
-                    return usuario.segmento.some((seg) => segmentosValores.includes(seg));
+        .filter((usuario) => {
+            // Filtro por segmentos
+            if (segmentosSelecionados.length > 0) {
+                const segmentosValores = segmentosSelecionados.map((s) => s.value);
+                return usuario.segmento.some((seg) => segmentosValores.includes(seg));
+            }
+            return true;
+        })
+        .filter((usuario) => {
+            // Filtro por filas
+            if (filasSelecionadas.length > 0) {
+                const filasValores = filasSelecionadas.map((f) => f.value);
+                return usuario.fila.some((f) => filasValores.includes(f));
+            }
+            return true;
+        })
+        .map((usuario) => {
+            const horaInicio = formatarHora(usuario.hora_inicio_suporte);
+            const horaFim = formatarHora(usuario.hora_fim_suporte);
+            const hrLogin = formatarHora(usuario.hr_login);
+
+            let status = 'success';
+
+            if (horaInicio && hrLogin && horaFim) {
+                if (horaInicio > hrLogin && horaInicio > horaFim) {
+                    status = 'danger';
                 }
-                return true;
-            })
-            .filter((usuario) => {
-                // Filtro por filas
-                if (filasSelecionadas.length > 0) {
-                    const filasValores = filasSelecionadas.map((f) => f.value);
-                    return usuario.fila.some((f) => filasValores.includes(f));
-                }
-                return true;
-            })
-            .map((usuario) => ({
+            }
+
+            return {
                 ...usuario,
                 avatar: avatar1,
-                status: 'success',
-            }));
+                status,
+            };
+        });
     }, []);
+    const filtrarResultado = (resultado, segmentosSelecionados, filasSelecionadas) => {
+        return resultado.map(item => {
+          const segmentosFiltrados = {};
+      
+          // Filtra os segmentos
+          Object.keys(item.segmentos).forEach(segmento => {
+            if (segmentosSelecionados.length === 0 || segmentosSelecionados.some(s => s.value === segmento)) {
+              const filasFiltradas = {};
+      
+              // Filtra as filas dentro do segmento
+              Object.keys(item.segmentos[segmento].filas).forEach(fila => {
+                if (filasSelecionadas.length === 0 || filasSelecionadas.some(f => f.value === fila)) {
+                  filasFiltradas[fila] = item.segmentos[segmento].filas[fila];
+                }
+              });
+      
+              if (Object.keys(filasFiltradas).length > 0) {
+                segmentosFiltrados[segmento] = {
+                  filas: filasFiltradas
+                };
+              }
+            }
+          });
+      
+          return {
+            ...item,
+            segmentos: segmentosFiltrados
+          };
+        });
+    };
+    const calcularTempoMedioAtendimento = (resultadoFiltrado) => {
+        let totalTempoEspera = 0;
+        let totalAcionamentos = 0;
+    
+        // Calcula o tempo médio global
+        resultadoFiltrado.forEach((hora) => {
+            Object.values(hora.segmentos).forEach((segmento) => {
+                Object.values(segmento.filas).forEach((fila) => {
+                    totalTempoEspera += fila.tempoTotalEspera;
+                    totalAcionamentos += fila.acionamentos;
+                });
+            });
+        });
+    
+        const tempoMedioGlobal = totalAcionamentos > 0 ? totalTempoEspera / totalAcionamentos : 0;
+    
+        // Calcula o tempo médio por hora
+        const tempoMedioPorHora = resultadoFiltrado.map((hora) => {
+            let tempoEsperaHora = 0;
+            let acionamentosHora = 0;
+    
+            Object.values(hora.segmentos).forEach((segmento) => {
+                Object.values(segmento.filas).forEach((fila) => {
+                    tempoEsperaHora += fila.tempoTotalEspera;
+                    acionamentosHora += fila.acionamentos;
+                });
+            });
+    
+            return {
+                horario: hora.horario,
+                tempoMedio: acionamentosHora > 0 ? tempoEsperaHora / acionamentosHora : 0,
+            };
+        });
+    
+        return {
+            tempoMedioGlobal,
+            tempoMedioPorHora,
+        };
+    };
     // Consulta os Logados a cada 5 minutos
     useEffect(() => {
         const consultarLogados = () => {
@@ -129,7 +219,7 @@ const ManagerView = ({ baseUrl }) => {
         consultarLogados();
         const interval = setInterval(() => {
             consultarLogados();
-        }, 300000);
+        }, 10000);
         return () => clearInterval(interval);
     }, [segmentosSelecionados, filasSelecionadas, usuariosFiltrados]);
     // Consulta os chamados iniciais e trata os dados
@@ -206,17 +296,51 @@ const ManagerView = ({ baseUrl }) => {
         const atualizarDadosCards = () => {
             socket.emit('cards_dashboard', (response) => {
                 if (response.dadosDashboard) {
-                    setDadosCards(response.dadosDashboard);
+                    const { logados, resultado, total } = response.dadosDashboard;
+    
+                    // Filtra os logados com base nos segmentos ou filas selecionados
+                    const logadosFiltrados = logados.map((logado) => {
+                        return {
+                            ...logado,
+                            usuarios: logado.usuarios.filter((usuario) => {
+                                // Filtro por segmentos
+                                if (segmentosSelecionados.length > 0) {
+                                    const segmentosValores = segmentosSelecionados.map((s) => s.value);
+                                    return usuario.segmento.split(',').some((seg) => segmentosValores.includes(seg));
+                                }
+                                // Filtro por filas
+                                if (filasSelecionadas.length > 0) {
+                                    const filasValores = filasSelecionadas.map((f) => f.value);
+                                    return usuario.fila.split(',').some((f) => filasValores.includes(f));
+                                }
+                                return true; // Se nenhum filtro for aplicado, retorna todos
+                            }),
+                        };
+                    });
+    
+                    // Filtra o resultado com base nos segmentos ou filas selecionados
+                    const resultadoFiltrado = filtrarResultado(resultado, segmentosSelecionados, filasSelecionadas);
+    
+                    // Calcula o tempo médio de atendimento
+                    const { tempoMedioGlobal, tempoMedioPorHora } = calcularTempoMedioAtendimento(resultadoFiltrado);
+    
+                    // Atualiza os dados dos cards com os logados, resultado filtrados e tempo médio
+                    setDadosCards({
+                        ...response.dadosDashboard,
+                        logados: logadosFiltrados,
+                        resultado: resultadoFiltrado,
+                        tempoMedioGlobal,
+                        tempoMedioPorHora,
+                    });
                 }
             });
         };
+    
         atualizarDadosCards();
-        const interval = setInterval(() => {
-            atualizarDadosCards();
-        }, 60000);
-
+        const interval = setInterval(atualizarDadosCards, 60000); // Atualiza a cada 1 minuto
+    
         return () => clearInterval(interval);
-    }, []);
+    }, [segmentosSelecionados, filasSelecionadas]);
 
     return (
         <div className="manager-view">
@@ -225,32 +349,32 @@ const ManagerView = ({ baseUrl }) => {
             {/* Filtros de Segmento e Fila */}
             <div className="filters">
                 <div className="filter">
-                    <Select
-                        options={segmentosOptions}
-                        isMulti
-                        placeholder="Selecione os segmentos"
-                        onChange={(selected) => setSegmentosSelecionados(selected || [])}
-                        className="select"
-                        classNamePrefix="select"
-                        menuPortalTarget={document.body}
-                        menuPosition="absolute"
-                        menuShouldScrollIntoView={false}
-                    />
+                <Select
+                    options={segmentosOptions}
+                    isMulti
+                    placeholder="Selecione os segmentos"
+                    onChange={(selected) => setSegmentosSelecionados(selected || [])}
+                    className="select"
+                    classNamePrefix="select"
+                    menuPortalTarget={document.body}
+                    menuPosition="absolute"
+                    menuShouldScrollIntoView={false}
+                />
                 </div>
 
                 <div className="filter">
-                    <Select
-                        options={filasOptions}
-                        isMulti
-                        placeholder="Selecione as filas"
-                        onChange={(selected) => setFilasSelecionadas(selected || [])}
-                        className="select"
-                        classNamePrefix="select"
-                        isDisabled={segmentosSelecionados.length === 0 && filas.length === 0}
-                        menuPortalTarget={document.body}
-                        menuPosition="absolute"
-                        menuShouldScrollIntoView={false}
-                    />
+                <Select
+                    options={filasOptions}
+                    isMulti
+                    placeholder="Selecione as filas"
+                    onChange={(selected) => setFilasSelecionadas(selected || [])}
+                    className="select"
+                    classNamePrefix="select"
+                    isDisabled={segmentosSelecionados.length === 0 && filas.length === 0}
+                    menuPortalTarget={document.body}
+                    menuPosition="absolute"
+                    menuShouldScrollIntoView={false}
+                />
                 </div>
             </div>
 

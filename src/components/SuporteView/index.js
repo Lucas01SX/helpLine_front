@@ -100,16 +100,6 @@ const SuporteView = ({ user, baseUrl }) => {
         if (filasHabilitadas.length > 0) {
             consultarSuporte();
         }
-
-        // Configura o intervalo para rodar a cada 5 minutos (300000ms)
-        const intervalId = setInterval(() => {
-            if (filasHabilitadas.length > 0) {
-                consultarSuporte();
-            }
-        }, 300000); // 300000ms = 5 minutos
-
-        // Limpeza do intervalo quando o componente for desmontado ou quando 'filasHabilitadas' mudar
-        return () => clearInterval(intervalId);
     }, [filasHabilitadas, calcularTempoEspera]);
 
 
