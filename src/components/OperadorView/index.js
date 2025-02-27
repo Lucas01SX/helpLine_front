@@ -27,7 +27,7 @@ const OperadorView = ({ user, baseUrl }) => {
             try {
 
                 const response = await fetch(`${baseUrl}/suporte-api/api/filas/gerais`);
-                // const response = await fetch(`http://localhost:3000/api/filas/gerais`);
+                //const response = await fetch(`http://localhost:3000/api/filas/gerais`);
                 const data = await response.json();
 
                 if (Array.isArray(data.filas)) {
@@ -153,20 +153,20 @@ const OperadorView = ({ user, baseUrl }) => {
         }
     };
 
-    const handleMostrarAvaliador = (rating) =>{
-        if(armazenaSuporte){
+    const handleMostrarAvaliador = (rating) => {
+        if (armazenaSuporte) {
             const now = new Date();
             const hora_atual = now.toTimeString().split(' ')[0];
-            
+    
             socket.emit("avaliacao_suporte", {
                 idSuporte: armazenaSuporte.idCancelamento,
                 horario_avaliacao: hora_atual,
                 avaliacao: rating
             });
-            
-            // console.log('Suporte:',armazenaSuporte.idCancelamento, "horario:", hora_atual, 'recebeu nota:', rating);
+    
+            // console.log('Suporte:', armazenaSuporte.idCancelamento, "horario:", hora_atual, 'recebeu nota:', rating);
             setMostrarAvaliador(false);
-            setArmazenaSuporte(null)
+            setArmazenaSuporte(null);
         }
     }
 

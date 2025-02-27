@@ -33,9 +33,13 @@ const StarRating = ({ onSalvar }) => {
           })}
         </div>
         <div className="modal-buttons">
-          <button className="rating-button" onClick={handleSave}>
+          <button
+            className={rating === 0 ? "rating-button-off" : "rating-button"}
+            disabled={rating === 0}
+            onClick={handleSave}
+          >
             Salvar
-          </button>
+         </button>
         </div>
       </div>
     </div>
