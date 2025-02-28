@@ -1,5 +1,5 @@
 # Etapa 1: Construção do React
-FROM node:16 as build
+FROM node:20 as build
 
 # Define o diretório de trabalho dentro do container
 WORKDIR /app
