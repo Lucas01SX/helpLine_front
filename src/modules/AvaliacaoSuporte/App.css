@@ -41,3 +41,14 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
+
+.rating-button-off{
+  margin-top: 15px;
+  background:#727373;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
