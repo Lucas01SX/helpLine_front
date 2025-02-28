@@ -16,7 +16,7 @@ const Home = ({ page }) => {
     useEffect(() => {
         const checkTimeAndLogout = () => {
             const now = new Date();
-            if (now.getHours() === 22) {
+            if (now.getHours() === 6) {
                 logout();
                 navigate("/"); // ✅ Redireciona corretamente
             }

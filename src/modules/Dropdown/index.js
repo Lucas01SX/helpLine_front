@@ -48,8 +48,8 @@ const Dropdown = ({ user, onLogout }) => {
         navigate('/manager');
     };
     const ROLE_PERMISSIONS = {
-        admins: [1031, 935, 14942, 15264, 828],
-        users: [574, 572, 15],
+        admins: [1031, 935, 14942, 15264, 828, 574, 572, 15],
+        users: [496,836,944],
     };
     
     const hasAdminAccess = ROLE_PERMISSIONS.admins.includes(codfuncao);
@@ -62,7 +62,7 @@ const Dropdown = ({ user, onLogout }) => {
         </CDropdownToggle>
 
         <CDropdownMenu className="pt-0 c-dropdown-menu" placement="bottom-end">
-            {hasAdminAccess && (
+            {(hasAdminAccess || hasUserAccess) && (
                 <>
                     <CDropdownHeader className="bg-body-secondary fw-semibold mb-2 header-dropdown">Account</CDropdownHeader>
                     <CDropdownItem onClick={handleResetPasswordClick}>
@@ -72,7 +72,7 @@ const Dropdown = ({ user, onLogout }) => {
                     <CDropdownDivider />
                 </>
             )}
-            {(hasAdminAccess || hasUserAccess) && (
+            {hasAdminAccess && (
                 <>
                     <CDropdownHeader className="bg-body-secondary fw-semibold my-2 header-dropdown">Páginas</CDropdownHeader>
                     <CDropdownItem onClick={handleSuporteClick}>

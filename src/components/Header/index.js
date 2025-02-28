@@ -17,7 +17,7 @@ const Header = () => {
         socket.emit('logoff',
             { token: user.token },
             (response) => {
-                if (response.message === 'Logoff realizado' || 'seção não encontrado') {
+                if (response.message === 'Logoff realizado' || response.message === 'seção não encontrado') {
                     logout();
                     navigate('/');
                 }
@@ -26,24 +26,30 @@ const Header = () => {
 
     useEffect(() => {
         if (user) {
-            // Emite imediatamente ao carregar a página
             socket.emit('atualizar_token', { token: user.token }, (response) => {
-
+                if (response.message === "Token não atualizado") {
+                    logout();
+                    navigate('/');
+                }
             });
-
-            // Configura o intervalo para emitir a cada minuto (60.000 ms)
+    
             const interval = setInterval(() => {
                 socket.emit('atualizar_token', { token: user.token }, (response) => {
-
+                    console.log(response.message);
+                    if (response.message === "Token não atualizado") {
+                        logout();
+                        navigate('/');
+                    }
                 });
             }, 60000);
-
-            // Limpa o intervalo ao desmontar o componente
+    
             return () => clearInterval(interval);
         }
+    }, [user, logout, navigate]); // ✅ Incluindo logout e navigate
+    
 
-    }, [user]);
-
+    
+    
     useEffect(() => {
         // Escutando a resposta do socket
         socket.on('aviso', (data) => {
@@ -56,6 +62,7 @@ const Header = () => {
             socket.off('aviso');
         };
     }, []);
+
 
     return (
         <header className="header-page">
