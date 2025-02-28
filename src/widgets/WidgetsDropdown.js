@@ -10,7 +10,7 @@ const WidgetsDropdown = ({ className, dados }) => {
   const widgetChartRef2 = useRef(null);
 
   // Verifica se os dados são válidos e extrai as propriedades necessárias
-  const { resultado = [], total = {}, logados = [], tempoMedioGlobal = 0, tempoMedioPorHora = [] } = dados ?? {};
+  const { resultado = [], logados = [], tempoMedioGlobal = 0, tempoMedioPorHora = [] } = dados ?? {};
 
   // Extrair os valores de logados por hora
   const labels = Array.isArray(resultado) ? resultado.map((item) => {

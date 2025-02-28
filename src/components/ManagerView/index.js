@@ -296,7 +296,8 @@ const ManagerView = ({ baseUrl }) => {
         const atualizarDadosCards = () => {
             socket.emit('cards_dashboard', (response) => {
                 if (response.dadosDashboard) {
-                    const { logados, resultado, total } = response.dadosDashboard;
+                    console.log(response.dadosDashboard)
+                    const { logados, resultado } = response.dadosDashboard;
     
                     // Filtra os logados com base nos segmentos ou filas selecionados
                     const logadosFiltrados = logados.map((logado) => {
