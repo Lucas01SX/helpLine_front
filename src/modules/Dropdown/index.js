@@ -49,7 +49,7 @@ const Dropdown = ({ user, onLogout }) => {
     };
     const ROLE_PERMISSIONS = {
         admins: [1031, 935, 14942, 15264, 828, 574, 572, 15],
-        users: [496,836,944],
+        users: [496,836,944, 14943],
     };
     
     const hasAdminAccess = ROLE_PERMISSIONS.admins.includes(codfuncao);

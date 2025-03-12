@@ -22,11 +22,10 @@ FROM nginx:alpine
 # Copia os arquivos estáticos do build para o NGINX
 COPY --from=build /app/build /usr/share/nginx/html/suporte
 
-# Copia o arquivo conf para o NGINX
-
+# Copia o arquivo de configuração do NGINX
 COPY default.conf /etc/nginx/conf.d/
 
-# Copia o arquivo de configuração padrão do NGINX (opcional)
+# Expor a porta 80
 EXPOSE 80
 
 # Define o comando padrão
