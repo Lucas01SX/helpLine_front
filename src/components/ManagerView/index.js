@@ -257,6 +257,7 @@ const ManagerView = ({ baseUrl }) => {
         };
         fetchFilas();
     }, [baseUrl]);
+
     // Atualizar os dados filtrados com base nos filtros selecionados
     useEffect(() => {
         const filtrarDados = () => {

@@ -5,6 +5,7 @@ import OperadorView from '../OperadorView';
 import SuporteView from '../SuporteView';
 import ManagerView from '../ManagerView';
 import './App.css';
+import RelatorioView from '../RelatorioView';
 
 const Home = ({ page }) => {
     const { user, logout } = useAuth();
@@ -38,6 +39,7 @@ const Home = ({ page }) => {
         OperadorView: [1066, 14936],
         ManagerView: [1031, 935, 14942, 15264, 828, 572, 574, 15],
         SuporteView: [1031, 935, 14942, 15264, 828, 572, 574, 944, 15],
+        RelatorioView: [1031, 935, 14942, 15264, 828, 572, 574, 15]
     };
 
     let ComponentToRender;
@@ -54,6 +56,9 @@ const Home = ({ page }) => {
                 break;
             case 'SuporteView':
                 ComponentToRender = <SuporteView user={user} baseUrl={baseUrl} />;
+                break;
+            case 'RelatorioView':
+                ComponentToRender = <RelatorioView user={user} baseUrl={baseUrl}/>;
                 break;
             default:
                 return <Navigate to="/" />;
@@ -73,8 +78,10 @@ const Home = ({ page }) => {
             case 572:
             case 574:
             case 15:
+                ComponentToRender = <RelatorioView user={user} baseUrl={baseUrl}/>;
                 ComponentToRender = <ManagerView user={user} baseUrl={baseUrl} />;
                 break;
+                
             default:
                 ComponentToRender = <SuporteView user={user} baseUrl={baseUrl} />;
                 classe = 'home-container';

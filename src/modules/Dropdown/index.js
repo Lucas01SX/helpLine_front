@@ -9,7 +9,7 @@ import {
     CDropdownToggle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { cilLockLocked, cilUser } from '@coreui/icons';
+import { cilChartLine, cilLockLocked, cilUser } from '@coreui/icons';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../ModalAdmin'; // Importando a Modal
 import avatarImg from '../../assets/img/avatara.jpg';
@@ -47,6 +47,10 @@ const Dropdown = ({ user, onLogout }) => {
     const handleManagerClick = () => {
         navigate('/manager');
     };
+
+    const handleRelatorioClick = () => {
+        navigate('/relatorio');
+    };
     const ROLE_PERMISSIONS = {
         admins: [1031, 935, 14942, 15264, 828, 574, 572, 15],
         users: [496,836,944],
@@ -82,6 +86,10 @@ const Dropdown = ({ user, onLogout }) => {
                     <CDropdownItem onClick={handleManagerClick}>
                         <CIcon icon={cilUser} className="me-2" />
                         Manager
+                    </CDropdownItem>
+                    <CDropdownItem onClick = {handleRelatorioClick}>
+                        <CIcon icon={cilChartLine} className="me-2" />
+                        Relatorio
                     </CDropdownItem>
                     <CDropdownDivider />
                 </>
