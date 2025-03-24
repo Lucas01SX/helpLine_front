@@ -1,0 +1,94 @@
+
+.container-filtro {
+    background-color:#022954;
+    display: flex;
+    border-radius: 5px;
+    gap: 10px; /* Espaçamento entre os selects */
+    padding: 20px;
+    top:60%;
+    margin:55px;
+    font-Size:13px;
+    justify-content:space-evenly;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+}
+
+.form-filtro {
+    display:flex;
+    flex-direction: row;
+    width:100%;
+    height:100%;
+    align-items: flex-end;
+    font:menu;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.input-pesquisar{
+    position: absolute;
+    top: 170px;
+    left: 1220px;
+    -webkit-text-size-adjust: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    outline-offset: -2px;
+    color:white;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    padding: 5px;
+    background-color:transparent;
+    margin-left: 3px;
+}
+
+.btn-primary {
+    cursor: pointer;
+}
+
+.overlay-rel {
+    position:fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+}
+
+.baseTabela{
+    height: 9px;
+}
+
+.select-operador{
+    position: relative;
+    width: 200px;
+    color:black
+}
+
+.select-segmento{
+    position: relative;
+    width: 140px;
+    color:black
+}
+
+.select-agrupar{
+    position: relative;
+    width: 100px;
+    color:black
+}
+
+.label-relatorio{
+    color:white;
+}
+
+.relatorio-tabela{
+    display: flex;
+    position:relative;
+    flex-direction: column;
+    bottom: 20px;
+
+}
+
