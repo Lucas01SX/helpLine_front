@@ -81,10 +81,10 @@ const RelatorioView = ({baseUrl}) => {
     }
     useEffect(() => {
         socket.emit('consulta_dados', (response) => {
-            console.log('Dados recebidos do socket:', response);
+            //console.log('Dados recebidos do socket:', response);
             if (response && Array.isArray(response.dadosCP)) {
                 setDemaisDados(response.dadosCP);
-                console.log("dadosfil", response.dadosCP);
+                //console.log("dadosfil", response.dadosCP);
             } else {
                 console.error('Dados inválidos CP:', response);
             }
@@ -146,7 +146,7 @@ const RelatorioView = ({baseUrl}) => {
                                 className="select-operador"
                                 placeholder="Gestor"
                                 name="gestor"
-                                options={getUnique('nomeGestao')}
+                                options={getUnique('nomeGestor')}
                                 onChange={handleFiltroChange}
                             />
                         </label>
@@ -218,7 +218,10 @@ const RelatorioView = ({baseUrl}) => {
                 </div>
                 <div className='relatorio-tabela'>
                         {isLoading ? (
-                            <CSpinner color='light' style={{marginLeft:'750px'}} />
+                            <div className='loading-rel'>
+    
+                            <CSpinner color='light' variant='grow' size='lg' />
+                            </div>
                         ) : (
                             <TabelaRelatorio dados={filteredDadosTabela} agruparPor={agruparPorSelecionado}  />
                         )}
