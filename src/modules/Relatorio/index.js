@@ -68,10 +68,11 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
     ];
 
     const tabelaFila = [
-        { name: "Fila", selector: (row) => row.agrupamento1, sortable: true, width:'350px'},
-        { name: "Segmento", selector: (row) => row.agrupamento2, sortable: true, width:'350px' },
-        { name: "Recebidas", selector:(row) => row.quant, sortable:true, sortFunction: (a, b) => a.quant - b.quant},
-        { name: "Atendidas", selector:(row) => row.somaAtendidas, sortable:true, sortFunction: (a, b) => a.somaAtendidas - b.somaAtendidas},
+        { name: "Fila", selector: (row) => row.agrupamento1, sortable: true, width:'300px'},
+        { name: "Segmento", selector: (row) => row.agrupamento2, sortable: true, width:'300x' },
+        { name: "Recebidas", selector:(row) => row.quant, sortable:true,width:'150px', sortFunction: (a, b) => a.quant - b.quant},
+        { name: "Atendidas", selector:(row) => row.somaAtendidas, sortable:true, width:'150px', sortFunction: (a, b) => a.somaAtendidas - b.somaAtendidas},
+        { name: "Abandonadas", selector:(row) => row.somaAbandonadas, sortable:true, width:'150px', sortFunction: (a, b) => a.somaAbandonadas - b.somaAbandonadas},
         { name: "Avaliadas", selector:(row) => row.totalNotas, sortable:true, width:'150px', sortFunction: (a, b) => a.totalNotas - b.totalNotas},
         { name: "Media", selector: (row) => row.nota, sortable: true, width:'100px'},
         { name: "TME", selector: (row) => row.tme, sortable: true, width:'100px'},
@@ -85,11 +86,11 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
         { name: "Atendidas", selector:(row) => row.somaAtendidas, sortable:true, sortFunction: (a, b) => a.somaAtendidas - b.somaAtendidas},
         { name: "atn_tme", selector:(row) => row.somaAtn_TME, sortable:true, sortFunction: (a, b) => a.somaAtn_TME - b.somaAtn_TME},
         { name: "Atn_Maior_TME", selector:(row) => row.somaAtn_maior_tme, sortable:true, sortFunction: (a, b) => a.somaAtn_maior_tme - b.somaAtn_maior_tme},
-        { name: "Abandonadas", selector:(row) => row.somaAbandonadas, sortable:true,width:'150px', sortFunction: (a, b) => a.somaAbandonada - b.somaAbandonada},
+        { name: "Abandonadas", selector:(row) => row.somaAbandonadas, sortable:true, width:'150px', sortFunction: (a, b) => a.somaAbandonadas - b.somaAbandonadas},
         { name: "Avaliadas", selector:(row) => row.totalNotas, sortable:true, width:'115px',sortFunction: (a, b) => a.totalNotas - b.totalNotas},
         { name: "Notas", selector:(row) => row.nota, sortable:true,width:'90px', sortFunction: (a, b) => a.nota - b.nota},
-        { name: "TME", selector:(row) => row.tme, sortable:true,width:'100px', sortFunction: (a, b) => a.tme - b.tme},
-        { name: "TMA", selector:(row) => row.tma, sortable:true,width:'100px', sortFunction: (a, b) => a.tma - b.tma},
+        { name: "TME", selector:(row) => row.tme, sortable:true,width:'100px'},
+        { name: "TMA", selector:(row) => row.tma, sortable:true,width:'100px'},
         { name: "SLA", selector:(row) => row.sla, sortable:true, width:'100px', sortFunction: (a, b) => a.sla - b.sla},
     ]
 

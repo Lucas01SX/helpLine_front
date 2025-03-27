@@ -3,13 +3,10 @@
     background-color:#022954;
     display: flex;
     border-radius: 5px;
-    gap: 10px; /* Espaçamento entre os selects */
-    padding: 20px;
+    padding: 15px;
     top:60%;
     margin:55px;
-    font-Size:13px;
     justify-content:space-evenly;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
 }
 
@@ -64,19 +61,19 @@
 
 .select-operador{
     position: relative;
-    width: 200px;
+    width: 230px;
     color:black
 }
 
 .select-segmento{
     position: relative;
-    width: 140px;
+    width: 150px;
     color:black
 }
 
 .select-agrupar{
     position: relative;
-    width: 100px;
+    width: 120px;
     color:black
 }
 
@@ -92,3 +89,19 @@
 
 }
 
+.loading-rel{
+    background-color: rgba(0, 0, 0, 0.4);
+    color: white;
+    display: inline-grid;
+    position: fixed;
+    top: 0;
+    left: 0;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    justify-items: center;
+    justify-content: center;
+    align-content: center;
+    gap:10px;
+
+}
