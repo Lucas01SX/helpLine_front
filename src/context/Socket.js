@@ -10,7 +10,7 @@ const socketHost = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
 const socket = io(socketHost, {
     //path: '/socket.io',
     path: '/suporte-api/socket.io',
-    // path: '/suporte-api-dev/socket.io',
+    path: '/suporte-api-dev/socket.io',
     transports: ['polling'], // ou ['websocket'] se for aplicável
 });
 

@@ -35,6 +35,7 @@ const RelatorioView = ({baseUrl}) => {
         { value: 'supervisor', label: 'Supervisor' },
         { value: 'coordenador', label: 'Coordenador' },
         { value: 'fila', label: 'Fila' },
+        { value: 'data', label: 'Data' },
         { value: 'ns_suporte', label: 'Nivel de Serviço'}
     ];
 

@@ -2,39 +2,23 @@ import React, {useState} from 'react';
 import DataTable from 'react-data-table-component';
 import './App.css';
 import { CButton } from '@coreui/react';
+import * as XLSX from 'xlsx';
 
-const handleTableExport = (columns, data) => {
-    let result = [];
+const handleTableExportXLSX = (columns, data) => {
+    const worksheet = XLSX.utils.json_to_sheet(
+        data.map(row => {
+            let obj = {};
+            columns.forEach(column => {
+                obj[column.name] = column.selector(row);
+            });
+            return obj;
+        })
+    );
 
-    // Adicionar cabeçalhos
-    let headers = columns.map(column => column.name);
-    result.push(headers.join(","));
-
-    // Adicionar dados
-    data.forEach(row => {
-        let rowData = [];
-        columns.forEach(column => {
-            let cell = column.selector(row);
-            rowData.push(cell.toString().replace(/"/g, '""')); // Escapar aspas duplas
-        });
-        result.push(rowData.join(","));
-    });
-
-    downloadCSVFile(result.join("\n"), "Relatorio Suporte.csv");
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Relatório");
+    XLSX.writeFile(workbook, "Relatorio_Suporte.xlsx");
 };
-
-// Função para baixar o arquivo CSV
-const downloadCSVFile = (csv, filename) => {
-    let csv_file = new Blob([csv], { type: "text/csv" });
-    let link = document.createElement("a");
-    link.download = filename;
-    link.href = window.URL.createObjectURL(csv_file);
-    link.style.display = "none";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link); // Limpeza
-};
-
 
 const TabelaRelatorio = ({ dados, agruparPor }) => {
 
@@ -45,7 +29,7 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
         { name: "Avaliadas", selector:(row) => row.totalNotas, sortable:true, width:'150px', sortFunction: (a, b) => a.totalNotas - b.totalNotas},
         { name: "TME", selector: (row) => row.tme, sortable: true},
         { name: "TMA", selector: (row) => row.tma, sortable: true},
-        { name: "Media", selector: (row) => row.nota, sortable: true}
+        { name: "Media", selector: (row) => row.nota, sortable: true,sortFunction: (a, b) => a.nota - b.nota}
     ];
 
     const tabelaSupervisor = [
@@ -55,7 +39,7 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
         { name: "Avaliadas", selector:(row) => row.totalNotas, sortable:true, width:'150px', sortFunction: (a, b) => a.totalNotas - b.totalNotas},
         { name: "TME", selector: (row) => row.tme, sortable: true},
         { name: "TMA", selector: (row) => row.tma, sortable: true},
-        { name: "Media", selector: (row) => row.nota, sortable: true}
+        { name: "Media", selector: (row) => row.nota, sortable: true, sortFunction: (a, b) => a.nota - b.nota}
     ];
 
     const tabelaCoordenador = [
@@ -64,7 +48,7 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
         { name: "Avaliadas", selector:(row) => row.totalNotas, sortable:true, width:'150px', sortFunction: (a, b) => a.totalNotas - b.totalNotas},
         { name: "TME", selector: (row) => row.tme, sortable: true},
         { name: "TMA", selector: (row) => row.tma, sortable: true},
-        { name: "Media", selector: (row) => row.nota, sortable: true}
+        { name: "Media", selector: (row) => row.nota, sortable: true, sortFunction: (a, b) => a.nota - b.nota}
     ];
 
     const tabelaFila = [
@@ -74,7 +58,7 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
         { name: "Atendidas", selector:(row) => row.somaAtendidas, sortable:true, width:'150px', sortFunction: (a, b) => a.somaAtendidas - b.somaAtendidas},
         { name: "Abandonadas", selector:(row) => row.somaAbandonadas, sortable:true, width:'150px', sortFunction: (a, b) => a.somaAbandonadas - b.somaAbandonadas},
         { name: "Avaliadas", selector:(row) => row.totalNotas, sortable:true, width:'150px', sortFunction: (a, b) => a.totalNotas - b.totalNotas},
-        { name: "Media", selector: (row) => row.nota, sortable: true, width:'100px'},
+        { name: "Media", selector: (row) => row.nota, sortable: true, width:'100px',sortFunction: (a, b) => a.nota - b.nota},
         { name: "TME", selector: (row) => row.tme, sortable: true, width:'100px'},
         { name: "TMA", selector: (row) => row.tma, sortable: true, width:'100px'},
         { name: "SLA", selector:(row) => row.sla, sortable:true, width:'100px', sortFunction: (a, b) => a.sla - b.sla}
@@ -92,6 +76,16 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
         { name: "TME", selector:(row) => row.tme, sortable:true,width:'100px'},
         { name: "TMA", selector:(row) => row.tma, sortable:true,width:'100px'},
         { name: "SLA", selector:(row) => row.sla, sortable:true, width:'100px', sortFunction: (a, b) => a.sla - b.sla},
+    ]
+    
+    const tabelaData = [
+        { name: "Data", selector: (row) => new Date(row.agrupamento1).toLocaleDateString(), sortable: true,  sortFunction: (a, b) => new Date(a.agrupamento1) - new Date(b.agrupamento1)},
+        { name: "Recebidas", selector:(row) => row.quant, sortable:true, width:'200px',sortFunction: (a, b) => a.quant - b.quant},
+        { name: "Atendidas", selector:(row) => row.somaAtendidas, sortable:true,width:'200px', sortFunction: (a, b) => a.somaAtendidas - b.somaAtendidas},
+        { name: "Avaliadas", selector:(row) => row.totalNotas, sortable:true, width:'200px',sortFunction: (a, b) => a.totalNotas - b.totalNotas},
+        { name: "Notas", selector:(row) => row.nota, sortable:true,width:'90px', sortFunction: (a, b) => a.nota - b.nota},
+        { name: "TME", selector:(row) => row.tme, sortable:true,width:'100px'},
+        { name: "TMA", selector:(row) => row.tma, sortable:true,width:'100px'},
     ]
 
     const customStyles = {
@@ -133,6 +127,9 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
         case 'coordenador':
             columns = tabelaCoordenador;
             break;
+        case 'data':
+            columns = tabelaData;
+            break;
         case 'ns_suporte':
             columns = tabelaNs;
             break;
@@ -159,9 +156,9 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
                     className="btn btn-primary" 
                     size='sm' 
                     style={{bottom:'160px'}}
-                    onClick={() => handleTableExport(columns, dados)}
+                    onClick={() => handleTableExportXLSX(columns, dados)}
                 >
-                    Baixar CSV
+                    Excel
                 </CButton>
             </div>
             <DataTable
