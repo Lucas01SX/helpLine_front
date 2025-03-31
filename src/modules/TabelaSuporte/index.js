@@ -65,11 +65,19 @@ const TabelaSuporte = ({ chamados, onAtenderSuporte }) => {
 
         // Ordenar os chamados
         return processData.sort((a, b) => {
-            // 1. Ordenar pelo status: "em atendimento" vai para o final
+           
+            //1. Acionamentos acima de 3 min tem prioridade na tabela
+            if (a.tempoEsperaSegundos >= 180 && b.tempoEsperaSegundos < 180) return -1;
+            if (b.tempoEsperaSegundos >= 180 && a.tempoEsperaSegundos < 180) return 1;
+    
+            // 2. "Comercial Clientes" tem prioridade sobre outras filas (exceto chamadas com +3 minutos)
+            if (a.fila === 'COMERCIAL_CLIENTES' && b.fila !== 'COMERCIAL_CLIENTES') return -1;
+            if (b.fila === 'COMERCIAL_CLIENTES' && a.fila !== 'COMERCIAL_CLIENTES') return 1;
+            // 3. Ordenar pelo status: "em atendimento" vai para o final
             if (a.status === 'em atendimento' && b.status !== 'em atendimento') return 1;
             if (a.status !== 'em atendimento' && b.status === 'em atendimento') return -1;
 
-            // 2. Ordenar por maior tempo de espera
+            // 4. Ordenar por maior tempo de espera
             return b.tempoEsperaSegundos - a.tempoEsperaSegundos;
         });
     }, [chamados]);
