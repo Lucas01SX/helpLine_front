@@ -4,10 +4,15 @@
     display: flex;
     border-radius: 5px;
     padding: 15px;
-    top:60%;
     margin:55px;
     justify-content:space-evenly;
 
+}
+
+.relatorio-view{
+    padding: 20px;
+    overflow-y: auto;
+    height: 100%;
 }
 
 .form-filtro {

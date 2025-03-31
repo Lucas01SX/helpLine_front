@@ -22,7 +22,8 @@
     "react-scripts": "5.0.1",
     "react-select": "^5.9.0",
     "socket.io-client": "^4.8.1",
-    "styled-components": "^6.1.15"
+    "styled-components": "^6.1.15",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",
