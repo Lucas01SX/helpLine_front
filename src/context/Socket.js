@@ -9,8 +9,13 @@ const socketHost = isRede1 ? 'http://172.32.1.81' : 'http://10.98.14.42';
 // Configura o socket com o host dinâmico
 const socket = io(socketHost, {
     //path: '/socket.io',
+<<<<<<< src/context/Socket.js
     //path: '/suporte-api/socket.io',
-    path: '/suporte-api-dev/socket.io',
+    //path: '/suporte-api-dev/socket.io',
+=======
+    path: '/suporte-api/socket.io',
+    //path: '/suporte-api-dev/socket.io',
+>>>>>>> src/context/Socket.js
     transports: ['polling'], // ou ['websocket'] se for aplicável
 });
 
