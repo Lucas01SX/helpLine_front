@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {cloneElement, useState} from 'react';
 import DataTable from 'react-data-table-component';
 import './App.css';
 import { CButton } from '@coreui/react';
@@ -21,6 +21,22 @@ const handleTableExportXLSX = (columns, data) => {
 };
 
 const TabelaRelatorio = ({ dados, agruparPor }) => {
+
+    const tabelaGeral = [
+        { name: "Data", selector: (row) => new Date(row.data).toLocaleDateString(), sortable: true,  sortFunction: (a, b) => new Date(a.agrupamento1) - new Date(b.agrupamento1)},
+        { name: "ID Suporte", selector: (row) => row.id, sortable: true,width:'125px'},
+        { name: "Operador", selector: (row) => row.operador, sortable: true, width:'400px'},
+        { name: "Suporte", selector: (row) => row.suporte, sortable: true, width:'400px'},
+        { name: "Gestor Suporte", selector: (row) => row.gestor, sortable: true, width:'350px' },
+        { name: "Fila", selector: (row) => row.fila, sortable: true, width:'300px'},
+        { name: "Segmento", selector: (row) => row.segmento, sortable: true, width:'180px' },
+        { name: "Unique ID", selector:(row) => row.unique_id_ligacao, sortable:true, width:'160px'},
+        { name: "Hora Início", selector: (row) => row.hora_inicio_suporte, sortable: true,width:'125px'},
+        { name: "Hora Fim", selector: (row) => row.hora_fim_suporte, sortable: true,width:'125px'},
+        { name: "Tempo em Atendimento", selector:(row) => row.tma, sortable:true,width:'100px'},
+        { name: "Nota", selector:(row) => row.avaliacao, sortable:true,width:'90px', sortFunction: (a, b) => a.avaliacao - b.avaliacao},
+        { name: "Descrição", selector:(row) => row.descricao, width:'1500px'},
+    ]
 
     const tabelaSuporte = [
         { name: "Suporte", selector: (row) => row.agrupamento1, sortable: true, width:'450px'},
@@ -115,6 +131,9 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
 
     let columns;
     switch (agruparPor) {
+        case 'geral':
+            columns = tabelaGeral;
+            break;
         case 'suporte':
             columns = tabelaSuporte;
             break;
@@ -134,7 +153,6 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
             columns = tabelaNs;
             break;
         default:
-            columns = undefined;
             break;
 
     }
@@ -162,8 +180,8 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
                 </CButton>
             </div>
             <DataTable
-                columns={columns}
-                data={dados}
+                columns={columns || []}
+                data={columns ? dados : []}
                 pagination
                 highlightOnHover
                 responsive

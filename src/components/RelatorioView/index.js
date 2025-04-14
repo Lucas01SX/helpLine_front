@@ -31,6 +31,7 @@ const RelatorioView = ({baseUrl}) => {
     });
 
     const opcoesAgruparPor = [
+        { value: 'geral', label:'Geral'},
         { value: 'suporte', label: 'Suporte' },
         { value: 'supervisor', label: 'Supervisor' },
         { value: 'coordenador', label: 'Coordenador' },
@@ -80,6 +81,9 @@ const RelatorioView = ({baseUrl}) => {
             }
         });
     }
+
+    console.log('foi',dadosTabela)
+
     useEffect(() => {
         socket.emit('consulta_dados', (response) => {
             //console.log('Dados recebidos do socket:', response);
