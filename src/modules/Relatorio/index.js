@@ -1,4 +1,4 @@
-import React, {cloneElement, useState} from 'react';
+import React, {useState} from 'react';
 import DataTable from 'react-data-table-component';
 import './App.css';
 import { CButton } from '@coreui/react';
@@ -33,7 +33,42 @@ const TabelaRelatorio = ({ dados, agruparPor }) => {
         { name: "Unique ID", selector:(row) => row.unique_id_ligacao, sortable:true, width:'160px'},
         { name: "Hora Início", selector: (row) => row.hora_inicio_suporte, sortable: true,width:'125px'},
         { name: "Hora Fim", selector: (row) => row.hora_fim_suporte, sortable: true,width:'125px'},
-        { name: "Tempo em Atendimento", selector:(row) => row.tma, sortable:true,width:'100px'},
+        {
+            name: "Tempo em Atendimento",
+            selector: (row) => {
+                if (!row.hora_inicio_suporte || !row.hora_fim_suporte) return '';
+        
+                const [h1 = 0, m1 = 0, s1 = 0] = row.hora_inicio_suporte.split(':').map(Number);
+                const [h2 = 0, m2 = 0, s2 = 0] = row.hora_fim_suporte.split(':').map(Number);
+        
+                const inicio = new Date(0, 0, 0, h1, m1, s1);
+                const fim = new Date(0, 0, 0, h2, m2, s2);
+        
+                const diff = fim - inicio;
+                if (isNaN(diff) || diff < 0) return 'Inválido';
+        
+                const totalSeconds = Math.floor(diff / 1000);
+                const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+                const seconds = String(totalSeconds % 60).padStart(2, '0');
+        
+                return `${hours}:${minutes}:${seconds}`;
+            },
+            sortable: true,
+            width: '125px',
+            sortFunction: (a, b) => {
+                const toSeconds = (hms) => {
+                    if (!hms) return 0;
+                    const [h = 0, m = 0, s = 0] = hms.split(':').map(Number);
+                    return h * 3600 + m * 60 + s;
+                };
+        
+                const duracaoA = toSeconds(a.hora_fim_suporte) - toSeconds(a.hora_inicio_suporte);
+                const duracaoB = toSeconds(b.hora_fim_suporte) - toSeconds(b.hora_inicio_suporte);
+        
+                return duracaoA - duracaoB;
+            }
+        },
         { name: "Nota", selector:(row) => row.avaliacao, sortable:true,width:'90px', sortFunction: (a, b) => a.avaliacao - b.avaliacao},
         { name: "Descrição", selector:(row) => row.descricao, width:'1500px'},
     ]
