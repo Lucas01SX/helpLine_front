@@ -4,6 +4,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import OperadorView from '../OperadorView';
 import SuporteView from '../SuporteView';
 import ManagerView from '../ManagerView';
+import GestaoAcessoView from '../GestaoAcessoView';
 import './App.css';
 import RelatorioView from '../RelatorioView';
 
@@ -39,7 +40,8 @@ const Home = ({ page }) => {
         OperadorView: [1066, 14936],
         ManagerView: [1031, 935, 14942, 15264, 828, 572, 574, 15],
         SuporteView: [1031, 935, 14942, 15264, 828, 572, 574, 944, 15],
-        RelatorioView: [1031, 935, 14942, 15264, 828, 572, 574, 15]
+        RelatorioView: [1031, 935, 14942, 15264, 828, 572, 574, 15],
+        GestaoAcessoView: [1031, 935, 14942, 15264, 828],
     };
 
     let ComponentToRender;
@@ -60,6 +62,9 @@ const Home = ({ page }) => {
             case 'RelatorioView':
                 ComponentToRender = <RelatorioView user={user} baseUrl={baseUrl}/>;
                 break;
+            case 'GestaoAcessoView':
+                ComponentToRender = <GestaoAcessoView user={user} baseUrl={baseUrl}/>;
+                break;
             default:
                 return <Navigate to="/" />;
         }
@@ -75,6 +80,7 @@ const Home = ({ page }) => {
             case 14942:
             case 15264:
             case 828:
+                ComponentToRender = <GestaoAcessoView user={user} baseUrl={baseUrl}/>;
             case 572:
             case 574:
             case 15:
