@@ -21,8 +21,6 @@ const ManagerView = ({ baseUrl }) => {
         if (!hora) return null;
         return hora.split('.')[0]; // Remove a parte dos milissegundos
     };
-
-    // Função para calcular o tempo de espera
     const calcularTempoEspera = useCallback((horaInicio) => {
         if (!horaInicio) return '00:00:00';
         if (typeof horaInicio === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(horaInicio)) {
@@ -66,8 +64,6 @@ const ManagerView = ({ baseUrl }) => {
         const segundos = String(diferenca % 60).padStart(2, '0');
         return `${horas}:${minutos}:${segundos}`;
     };
-
-    // Função para tratar os dados recebidos
     const tratarDados = useCallback((dados) => {
         return dados.map((usuario) => ({
             ...usuario,
@@ -76,7 +72,6 @@ const ManagerView = ({ baseUrl }) => {
             status: usuario.nome_suporte ? 1 : 0
         }));
     }, [calcularTempoEspera]);
-    // Atualizar o tempo de atendimento a cada segundo
     useEffect(() => {
         const interval = setInterval(() => {
             setDadosTabela(prevDados => prevDados.map(usuario => ({
@@ -101,7 +96,6 @@ const ManagerView = ({ baseUrl }) => {
     const usuariosFiltrados = useCallback((dados, segmentosSelecionados, filasSelecionadas) => {
         return dados
         .filter((usuario) => {
-            // Filtro por segmentos
             if (segmentosSelecionados.length > 0) {
                 const segmentosValores = segmentosSelecionados.map((s) => s.value);
                 return usuario.segmento.some((seg) => segmentosValores.includes(seg));
@@ -109,7 +103,6 @@ const ManagerView = ({ baseUrl }) => {
             return true;
         })
         .filter((usuario) => {
-            // Filtro por filas
             if (filasSelecionadas.length > 0) {
                 const filasValores = filasSelecionadas.map((f) => f.value);
                 return usuario.fila.some((f) => filasValores.includes(f));
@@ -120,15 +113,12 @@ const ManagerView = ({ baseUrl }) => {
             const horaInicio = formatarHora(usuario.hora_inicio_suporte);
             const horaFim = formatarHora(usuario.hora_fim_suporte);
             const hrLogin = formatarHora(usuario.hr_login);
-
             let status = 'success';
-
             if (horaInicio && hrLogin && horaFim) {
                 if (horaInicio > hrLogin && horaInicio > horaFim) {
                     status = 'danger';
                 }
             }
-
             return {
                 ...usuario,
                 avatar: avatar1,
@@ -139,13 +129,9 @@ const ManagerView = ({ baseUrl }) => {
     const filtrarResultado = (resultado, segmentosSelecionados, filasSelecionadas) => {
         return resultado.map(item => {
           const segmentosFiltrados = {};
-      
-          // Filtra os segmentos
           Object.keys(item.segmentos).forEach(segmento => {
             if (segmentosSelecionados.length === 0 || segmentosSelecionados.some(s => s.value === segmento)) {
               const filasFiltradas = {};
-      
-              // Filtra as filas dentro do segmento
               Object.keys(item.segmentos[segmento].filas).forEach(fila => {
                 if (filasSelecionadas.length === 0 || filasSelecionadas.some(f => f.value === fila)) {
                   filasFiltradas[fila] = item.segmentos[segmento].filas[fila];
@@ -169,8 +155,6 @@ const ManagerView = ({ baseUrl }) => {
     const calcularTempoMedioAtendimento = (resultadoFiltrado) => {
         let totalTempoEspera = 0;
         let totalAcionamentos = 0;
-    
-        // Calcula o tempo médio global
         resultadoFiltrado.forEach((hora) => {
             Object.values(hora.segmentos).forEach((segmento) => {
                 Object.values(segmento.filas).forEach((fila) => {
@@ -179,10 +163,7 @@ const ManagerView = ({ baseUrl }) => {
                 });
             });
         });
-    
         const tempoMedioGlobal = totalAcionamentos > 0 ? totalTempoEspera / totalAcionamentos : 0;
-    
-        // Calcula o tempo médio por hora
         const tempoMedioPorHora = resultadoFiltrado.map((hora) => {
             let tempoEsperaHora = 0;
             let acionamentosHora = 0;
@@ -205,7 +186,6 @@ const ManagerView = ({ baseUrl }) => {
             tempoMedioPorHora,
         };
     };
-    // Consulta os Logados a cada 5 minutos
     useEffect(() => {
         const consultarLogados = () => {
             socket.emit('consultar_logados', (response) => {
@@ -222,7 +202,6 @@ const ManagerView = ({ baseUrl }) => {
         }, 10000);
         return () => clearInterval(interval);
     }, [segmentosSelecionados, filasSelecionadas, usuariosFiltrados]);
-    // Consulta os chamados iniciais e trata os dados
     useEffect(() => {
         const atualizarDados = () => {
             socket.emit('atualizar_manager', (response) => {
@@ -236,10 +215,8 @@ const ManagerView = ({ baseUrl }) => {
         const interval = setInterval(() => {
             atualizarDados();
         }, 1000);
-
         return () => clearInterval(interval);
     }, [tratarDados]);
-    // Buscar as filas disponíveis ao carregar o componente
     useEffect(() => {
         const fetchFilas = async () => {
             try {
@@ -257,19 +234,15 @@ const ManagerView = ({ baseUrl }) => {
         };
         fetchFilas();
     }, [baseUrl]);
-
-    // Atualizar os dados filtrados com base nos filtros selecionados
     useEffect(() => {
         const filtrarDados = () => {
             let dados = [...dadosTabela];
-            // Filtro por segmentos
             if (segmentosSelecionados.length > 0) {
                 const segmentosValores = segmentosSelecionados.map((s) => s.value);
                 dados = dados.filter((item) =>
                     filas.some((f) => segmentosValores.includes(f.segmento) && f.fila === item.fila)
                 );
             }
-            // Filtro por filas
             if (filasSelecionadas.length > 0) {
                 const filasValores = filasSelecionadas.map((f) => f.value);
                 dados = dados.filter((item) => filasValores.includes(item.fila));
@@ -278,12 +251,9 @@ const ManagerView = ({ baseUrl }) => {
         };
         filtrarDados();
     }, [segmentosSelecionados, filasSelecionadas, dadosTabela, filas]);
-
-    // Obter opções de segmentos
     const segmentosOptions = [
         ...new Set(filas.map((f) => f.segmento)),
     ].map((segmento) => ({ value: segmento, label: segmento }));
-    // Obter opções de filas filtradas com base no(s) segmento(s) selecionado(s)
     const filasOptions = filas
         .filter((f) =>
             segmentosSelecionados.length === 0 ||
@@ -297,20 +267,15 @@ const ManagerView = ({ baseUrl }) => {
         const atualizarDadosCards = () => {
             socket.emit('cards_dashboard', (response) => {
                 if (response.dadosDashboard) {
-                    console.log(response.dadosDashboard)
                     const { logados, resultado } = response.dadosDashboard;
-    
-                    // Filtra os logados com base nos segmentos ou filas selecionados
                     const logadosFiltrados = logados.map((logado) => {
                         return {
                             ...logado,
                             usuarios: logado.usuarios.filter((usuario) => {
-                                // Filtro por segmentos
                                 if (segmentosSelecionados.length > 0) {
                                     const segmentosValores = segmentosSelecionados.map((s) => s.value);
                                     return usuario.segmento.split(',').some((seg) => segmentosValores.includes(seg));
                                 }
-                                // Filtro por filas
                                 if (filasSelecionadas.length > 0) {
                                     const filasValores = filasSelecionadas.map((f) => f.value);
                                     return usuario.fila.split(',').some((f) => filasValores.includes(f));

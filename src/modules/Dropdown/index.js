@@ -9,7 +9,7 @@ import {
     CDropdownToggle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { cilChartLine, cilLockLocked, cilUser } from '@coreui/icons';
+import { cilChartLine, cilLockLocked, cilUser, cilControl } from '@coreui/icons';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../ModalAdmin'; // Importando a Modal
 import avatarImg from '../../assets/img/avatara.jpg';
@@ -51,12 +51,18 @@ const Dropdown = ({ user, onLogout }) => {
     const handleRelatorioClick = () => {
         navigate('/relatorio');
     };
+
+    const handleGestaoAcessoClick = () => {
+        navigate('/gestao/acesso');
+    }
     const ROLE_PERMISSIONS = {
         admins: [1031, 935, 14942, 15264, 828, 574, 572, 15],
+        planejamento: [1031, 935, 14942, 15264, 828],
         users: [496,836,944, 14943],
     };
     
     const hasAdminAccess = ROLE_PERMISSIONS.admins.includes(codfuncao);
+    const hasPlanejamentonAccess = ROLE_PERMISSIONS.planejamento.includes(codfuncao);
     const hasUserAccess = ROLE_PERMISSIONS.users.includes(codfuncao);
 
     return (
@@ -93,7 +99,16 @@ const Dropdown = ({ user, onLogout }) => {
                     </CDropdownItem>
                     <CDropdownDivider />
                 </>
-            )}
+            )} {hasPlanejamentonAccess && (
+                <>
+                    <CDropdownItem onClick={handleGestaoAcessoClick}>
+                        <CIcon icon={cilControl} className="me-2" />
+                        Gestão de Acesso
+                    </CDropdownItem>
+                </>
+            )
+
+            }
 
             <CDropdownItem onClick={onLogout}>
                 <CIcon icon={cilLockLocked} className="me-2" />

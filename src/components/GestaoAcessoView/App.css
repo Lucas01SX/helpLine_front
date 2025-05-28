@@ -1,0 +1,578 @@
+/* Estilos gerais */
+.controle-acesso-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    max-height: 100%;
+    margin: 0 auto;
+}
+
+section {
+    background: #fff;
+    padding: .8%;
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-content .modal-footer ,  .modal-content .modal-header{
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    gap: 2%;
+}
+.modal-content .modal-body {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    gap: 2%;
+    flex-direction: column;
+    align-items: center;
+ }
+.modal-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.modal-button.primary-button {
+    background-color: #3182ce;
+    color: white;
+    border: none;
+}
+
+.modal-button.secondary-button {
+    background-color: white;
+    color: #3182ce;
+    border: 1px solid #3182ce;
+}
+
+.modal-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Drag and Drop */
+.dragging {
+    opacity: 0.5;
+    background-color: #f0f0f0;
+}
+
+.drop-over {
+    background-color: #f8f8f8;
+    border: 2px dashed #ccc;
+}
+
+.lista-item {
+    cursor: grab;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.lista-item:active {
+    cursor: grabbing;
+}
+
+.lista-item:hover {
+    background-color: #f9f9f9;
+}
+
+.lista-item.selecionado {
+    background-color: #ebf8ff;
+}
+
+/* Listas de filas */
+.filtros-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+}
+
+.listas-container {
+    display: flex;
+    gap: 1rem;
+    height: 400px;
+    width: 100%;
+}
+
+.lista-disponiveis, .lista-selecionadas {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+}
+
+.lista-header {
+    padding: 0.75rem;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lista-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: #000;
+}
+
+.lista-header-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.busca-input {
+    padding: 0.35rem 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    width: 150px;
+}
+
+.selecionar-todas {
+    background: none;
+    border: none;
+    color: #3182ce;
+    cursor: pointer;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.selecionar-todas:hover {
+    text-decoration: underline;
+}
+
+.lista-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.fila-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-left: 0.5rem;
+}
+
+.fila-nome, .fila-mcdu {
+    color: #000;
+    font-size: 0.875rem;
+}
+
+.fila-nome {
+    font-weight: bold;
+}
+
+.fila-mcdu {
+    color: #666;
+}
+
+.lista-botoes {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+.botao-mover {
+    padding: 0.5rem;
+    background-color: #3182ce;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.botao-mover:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.botao-mover:hover:not(:disabled) {
+    background-color: #2c5282;
+}
+
+/* Status messages */
+.status-message {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.status-message.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Loader */
+.loader {
+    margin: 15px 0;
+    text-align: center;
+    color: #666;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .listas-container {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .lista-botoes {
+        flex-direction: row;
+        padding: 1rem 0;
+        justify-content: center;
+    }
+    
+    .lista-header-actions {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+    }
+    
+    .busca-input {
+        width: 120px;
+    }
+}
+
+/* DataTables - mantido conforme original */
+.custom-datatable.dataTable.dtr-inline thead {
+    display: none;
+}
+
+.custom-datatable.dataTable {
+    margin-bottom: 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #000;
+    text-align: center;
+}
+
+.dt-layout-row {
+    width: 100%;
+    display: flex;
+    height: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 1%;
+}
+
+/* Botões de ação */
+.action-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    margin: 2px;
+}
+
+.primary-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.secondary-button {
+    background-color: #6c757d;
+    color: white;
+}
+
+.warning-button {
+    background-color: #ffc107;
+    color: #212529;
+}
+.dt-layout-cell.dt-layout-full {
+    width: 100%;
+}
+.dt-column-header {
+    cursor: pointer;
+}
+.dt-layout-row {
+    justify-content: flex-end;
+    width: 50%;
+    display: flex
+;
+}
+.dt-layout-row .dt-layout-cell.dt-layout-end {
+    justify-content: flex-end;
+    width: 100%;
+    display: flex;
+}
+.dt-layout-row .dt-layout-cell.dt-layout-end .dt-paging{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.dt-layout-row .dt-layout-cell.dt-layout-end .dt-paging nav {
+    width: 100%;
+    display: flex;
+    gap: 1%;
+    justify-content: flex-end;
+}
+.dt-layout-row .dt-layout-cell.dt-layout-end .dt-paging nav button {
+    width: 4%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+.dt-layout-row.dt-layout-table, .dt-layout-row, .dt-layout-row {
+    width: 100%;
+}
+.dt-layout-cell {
+    width: 50%;
+}
+.modal-select {
+    padding: .5%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+/* Melhorias visuais para drag and drop */
+.lista-item {
+    transition: all 0.2s ease;
+    background-color: white;
+}
+
+.lista-item.selecionado {
+    background-color: #ebf8ff;
+    border-left: 3px solid #3182ce;
+}
+
+.lista-item.dragging {
+    opacity: 0.5;
+    background-color: #f0f0f0;
+    transform: scale(0.98);
+}
+
+.drop-over {
+    background-color: #f8f8f8;
+    border: 2px dashed #3182ce;
+}
+
+/* Melhor contraste para os textos */
+.fila-nome {
+    color: #2d3748;
+    font-weight: 500;
+}
+
+.fila-mcdu {
+    color: #4a5568;
+}
+
+/* Estilo para múltiplos itens selecionados */
+.lista-items .lista-item.selecionado:not(:last-child) {
+    margin-bottom: 2px;
+}
+/* Adicione estas regras ao seu CSS existente */
+.lista-item input[type="checkbox"] {
+    pointer-events: none; /* Impede interferência durante o drag */
+}
+
+.lista-item.dragging {
+    opacity: 0.7;
+    transform: scale(0.98);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.lista-item.dragging.selecionado {
+    background-color: #bee3f8;
+    border-left: 3px solid #3182ce;
+}
+
+/* Garante que o item que fica no lugar não fique selecionado */
+.lista-items .lista-item.dragging-placeholder {
+    opacity: 0.5;
+    background-color: transparent;
+}
+
+.lista-items .lista-item.dragging-placeholder input[type="checkbox"] {
+    visibility: hidden;
+}
+/* Adicione ao seu CSS existente */
+.lista-item.multi-drag {
+    background-color: #ebf8ff;
+    border-left: 3px solid #3182ce;
+}
+
+.lista-item.dragging.multi-drag {
+    opacity: 0.9;
+    box-shadow: 0 0 0 2px #3182ce;
+}
+
+.multi-drag-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #3182ce;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+.busca-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 200px;
+    margin-right: 10px;
+    transition: border-color 0.3s;
+}
+
+.busca-input:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.2);
+}
+
+.lista-header-actions {
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .busca-input {
+        width: 150px;
+    }
+    
+    .lista-header-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .busca-input {
+        margin-right: 0;
+        margin-bottom: 8px;
+        width: 100%;
+    }
+}
+.busca-input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+  margin-bottom: 10px;
+  transition: border-color 0.3s;
+}
+
+.busca-input:focus {
+  border-color: #4a90e2;
+  outline: none;
+}
+
+.nenhum-resultado {
+  padding: 15px;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+/* Adicione ao seu arquivo CSS */
+.lista-item.dragging {
+    opacity: 0.5;
+}
+
+.lista-item.selecionado {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196f3;
+}
+
+.multi-drag-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #2196f3;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}

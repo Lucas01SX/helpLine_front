@@ -33,6 +33,7 @@ root.render(
           <Route path="/manager" element={<Layout> <Home page="ManagerView" /> </Layout>} />
           <Route path="/operador" element={<Layout> <Home page="OperadorView" /> </Layout>} />
           <Route path="/relatorio" element={<Layout> <Home page="RelatorioView"/> </Layout>} />
+          <Route path="/gestao/acesso" element={<Layout> <Home page="GestaoAcessoView"/> </Layout>} />
           {/* Rota para redirecionar para "/" em caso de erro 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
