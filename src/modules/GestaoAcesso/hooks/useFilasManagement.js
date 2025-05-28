@@ -3,7 +3,6 @@ import useDebounce from './useDebounce';
 import socket from '../../../context/Socket';
 
 export const useFilasManagement = (filas, usuarios, setUsuarios, user) => {
-    console.log(user);
     const [showFilasModal, setShowFilasModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [idUsuario, setIdUsuario] = useState('');
@@ -51,26 +50,29 @@ export const useFilasManagement = (filas, usuarios, setUsuarios, user) => {
         : filasSelecionadasTemporarias;
 
 
-    const handleOpenModal = useCallback((user, type) => {
-        if (type === 'filas') {
-            setSelectedUser(user);
-            setIdUsuario(user.idUsuario);
-            setUpdateStatus(null);
-            const filasCadastradas = user.filasDetalhes.map((fila, idx) => ({
-                fila,
-                mcdu: user.mcdu[idx] || '',
-                segmento: user.segmentos[idx] || ''
-            }));
-            setFilasSelecionadasTemporarias(filasCadastradas);
-            setIsAjuste(user.filas === 'Cadastradas');
-            setShowFilasModal(true);
-        }
-    }, []);
+        const handleOpenModal = useCallback((user, type) => {
+            if (type === 'filas') {
+                const usuarioAtualizado = usuarios.find(u => u.idUsuario === user.idUsuario);
+                setSelectedUser(usuarioAtualizado || user);
+                setIdUsuario(user.idUsuario);
+                setUpdateStatus(null);
+                const filasAtuais = (usuarioAtualizado || user).filasDetalhes || [];
+                const mcduAtuais = (usuarioAtualizado || user).mcdu || [];
+                const segmentosAtuais = (usuarioAtualizado || user).segmentos || [];
+                
+                const filasCadastradas = filasAtuais.map((fila, idx) => ({
+                    fila,
+                    mcdu: mcduAtuais[idx] || '',
+                    segmento: segmentosAtuais[idx] || ''
+                }));
+                setFilasSelecionadasTemporarias(filasCadastradas);
+                setIsAjuste((usuarioAtualizado || user).filas === 'Cadastradas');
+                setShowFilasModal(true);
+            }
+        }, [usuarios]);
 
     const handleCloseModal = useCallback(() => {
         setShowFilasModal(false);
-        setSelectedUser(null);
-        setIdUsuario('');
         setUpdateStatus(null);
         setSegmentoSelecionado('all');
         setTermoBuscaDisponiveisRaw('');
@@ -84,7 +86,7 @@ export const useFilasManagement = (filas, usuarios, setUsuarios, user) => {
         const filasParaEnviar = filasSelecionadasTemporarias.map(f => f.fila);
         const mcduParaEnviar = filasSelecionadasTemporarias.map(f => f.mcdu);
         const segmentosParaEnviar = filasSelecionadasTemporarias.map(f => f.segmento);
-
+        
         const userData = {
             idUsuario,
             matricula: selectedUser?.matricula,
@@ -99,25 +101,35 @@ export const useFilasManagement = (filas, usuarios, setUsuarios, user) => {
 
         socket.emit('atualizar_filas', userData, (response) => {
             setIsUpdating(false);
-            if (Array.isArray(response) && response[0].message.includes("sucesso")) {
+            if (response.message === 'success') {
                 setUpdateStatus('success');
+                const filasAtualizadas = filasSelecionadasTemporarias.map((fila, idx) => ({
+                    fila: filasParaEnviar[idx],
+                    mcdu: mcduParaEnviar[idx],
+                    segmento: segmentosParaEnviar[idx]
+                }));
+                setFilasSelecionadasTemporarias(filasAtualizadas);
                 const updatedUsuarios = usuarios.map(u =>
                     u.idUsuario === idUsuario
                         ? {
                             ...u,
                             filas: filasParaEnviar.length > 0 ? 'Cadastradas' : 'Não Cadastradas',
-                            filasDetalhes: filasParaEnviar,
-                            mcdu: mcduParaEnviar,
-                            segmentos: [...new Set(segmentosParaEnviar)]
+                            filasDetalhes: [...filasParaEnviar], 
+                            mcdu: [...mcduParaEnviar],
+                            segmentos: [...new Set(segmentosParaEnviar)] 
                         }
                         : u
                 );
                 setUsuarios(updatedUsuarios);
+                setSelecionadasParaAdicionar([]);
+                setSelecionadasParaRemover([]);
+                setTermoBuscaDisponiveisRaw('');
+                setTermoBuscaSelecionadasRaw('');
             } else {
                 setUpdateStatus('error');
             }
         });
-    }, [idUsuario, filasSelecionadasTemporarias, usuarios, selectedUser, setUsuarios, isAjuste]);
+    }, [idUsuario, filasSelecionadasTemporarias, usuarios, selectedUser, setUsuarios, isAjuste, user.login]);
 
     const adicionarFilas = useCallback(() => {
         const toAdd = filasDisponiveis.filter(f => selecionadasParaAdicionar.includes(f.fila));
@@ -217,6 +229,7 @@ export const useFilasManagement = (filas, usuarios, setUsuarios, user) => {
         selecionarTodasSelecionadas,
         setSelecionadasParaAdicionar,
         setSelecionadasParaRemover,
-        handleDrop
+        handleDrop,
+        setFilasSelecionadasTemporarias
     };
 };

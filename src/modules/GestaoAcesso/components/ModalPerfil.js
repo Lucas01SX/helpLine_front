@@ -24,7 +24,7 @@ export const ModalPerfil = ({
                     {updateStatus ? (
                         <div className={`status-message ${updateStatus}`}>
                             {updateStatus === 'success'
-                                ? 'Perfil alterado com sucesso!'
+                                ? 'Perfil alterado com sucesso, gentileza, solicite ao colaborador relogar no HelpLine para a alteração refletir!'
                                 : 'Ocorreu um erro, por gentileza tente novamente'}
                         </div>
                     ) : (

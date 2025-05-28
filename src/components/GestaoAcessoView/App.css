@@ -270,7 +270,11 @@ section {
     padding: 1rem;
     border-radius: 4px;
     margin-bottom: 1rem;
+    display: flex;
     text-align: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .status-message.success {

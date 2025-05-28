@@ -66,7 +66,8 @@ const GestaoAcessoView = ({ user, baseUrl }) => {
         handleOpenModal: handleOpenFilasModal,
         handleCloseModal: handleCloseFilasModal,
         handleCadastrarFilas,
-        handleDrop
+        handleDrop,
+        setFilasSelecionadasTemporarias
     } = useFilasManagement(filas, usuarios, setUsuarios, user);
 
     const handleOpenModal = (user, type) => {
@@ -180,6 +181,9 @@ const GestaoAcessoView = ({ user, baseUrl }) => {
                         handleCloseModal={handleCloseFilasModal}
                         handleCadastrarFilas={handleCadastrarFilas}
                         handleDrop={handleDrop}
+                        setFilasSelecionadasTemporarias={setFilasSelecionadasTemporarias}
+                        usuarios={usuarios}
+                        handleOpenModal={handleOpenFilasModal}
                     />
                 </DndProvider>
             </section>

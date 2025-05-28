@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react'; // Adicione o useEffect aqui
 import { DraggableFila } from './DraggableFila';
 import { DroppableArea } from './DroppableArea';
 
@@ -27,8 +27,25 @@ export const ModalFilas = ({
     toggleSelecaoRemocao,
     selecionarTodasDisponiveis,
     selecionarTodasSelecionadas,
-    handleDrop
+    handleDrop,
+    setFilasSelecionadasTemporarias,
+    usuarios,
+    handleOpenModal
 }) => {
+    useEffect(() => {
+        if (selectedUser && showFilasModal) {
+            const filasAtuais = selectedUser.filasDetalhes || [];
+            const mcduAtuais = selectedUser.mcdu || [];
+            const segmentosAtuais = selectedUser.segmentos || [];
+            const filasCadastradas = filasAtuais.map((fila, idx) => ({
+                fila,
+                mcdu: mcduAtuais[idx] || '',
+                segmento: segmentosAtuais[idx] || ''
+            }));
+            setFilasSelecionadasTemporarias(filasCadastradas);
+        }
+    }, [selectedUser, showFilasModal, setFilasSelecionadasTemporarias]);
+
     if (!showFilasModal) return null;
 
     return (
@@ -46,12 +63,20 @@ export const ModalFilas = ({
                     {updateStatus ? (
                         <div className={`status-message ${updateStatus}`}>
                             {updateStatus === 'success'
-                                ? 'Operação realizada com sucesso!'
+                                ? 'Operação realizada com sucesso, gentileza, solicite ao colaborador relogar no HelpLine para a alteração refletir'
                                 : 'Ocorreu um erro, por gentileza tente novamente'}
                             <div className="modal-footer single-button">
                                 <button
                                     className="modal-button primary-button"
-                                    onClick={handleCloseModal}
+                                    onClick={() => {
+                                        handleCloseModal();
+                                        setTimeout(() => {
+                                            const user = usuarios.find(u => u.idUsuario === selectedUser.idUsuario);
+                                            if (user) {
+                                                handleOpenModal(user, 'filas');
+                                            }
+                                        }, 100);
+                                    }}
                                 >
                                     Fechar
                                 </button>
