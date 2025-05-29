@@ -4,12 +4,19 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
+<<<<<<< Updated upstream
       - "8002:80" # Porta externa 8004 mapeada para o NGINX no container
+=======
+      - "8002:8002" # Porta externa 8004 mapeada para o NGINX no container
+>>>>>>> Stashed changes
     volumes:
       - ./src:/app/src # Monta o diretório src para facilitar desenvolvimento
     environment:
       - NODE_ENV=production
       - TZ=America/Sao_Paulo # Define o fuso horário
+<<<<<<< Updated upstream
     deploy:
       replicas: 1
       mode: replicated
+=======
+>>>>>>> Stashed changes

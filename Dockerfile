@@ -26,7 +26,7 @@ COPY --from=build /app/build /usr/share/nginx/html/suporte
 COPY default.conf /etc/nginx/conf.d/
 
 # Expor a porta 80
-EXPOSE 80
+EXPOSE 8002
 
 # Define o comando padrão
 CMD ["nginx", "-g", "daemon off;"]
