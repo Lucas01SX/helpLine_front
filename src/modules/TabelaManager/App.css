@@ -1,0 +1,77 @@
+/* ModalCustomizado.css */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content-manager {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 50%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.modal-content-manager .modal-header {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #022954;
+    font-weight: bold;
+}
+
+.modal-content-manager .modal-body {
+    margin-bottom: 20px;
+    color: #000;
+}
+.modal-content-manager .modal-body p {
+    text-align: center;
+}
+
+.modal-content-manager .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-content-manager .modal-btn {
+    padding: 5px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.modal-content-manager .modal-btn-cancel {
+    background-color: #6c757d;
+    color: white;
+}
+
+.modal-content-manager .modal-btn-confirm {
+    background-color: #dc3545;
+    color: white;
+}
+/* App.css */
+.modal-content-manager .btn-encerrar {
+    margin-left: 10px;
+    padding: 2px 5px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.modal-content-manager .btn-encerrar:hover {
+    background-color: #c82333;
+}

@@ -8,7 +8,7 @@ import './App.css';
 import '@coreui/coreui/dist/css/coreui.min.css';
 import avatar1 from '../../assets/img/avatar.webp';
 
-const ManagerView = ({ baseUrl }) => {
+const ManagerView = ({ baseUrl, user }) => {
     const [filas, setFilas] = useState([]);
     const [segmentosSelecionados, setSegmentosSelecionados] = useState([]);
     const [filasSelecionadas, setFilasSelecionadas] = useState([]);
@@ -347,7 +347,7 @@ const ManagerView = ({ baseUrl }) => {
 
             <div className="tables">
                 {/* Outras tabelas */}
-                <TabelaManager dados={dadosFiltrados} />
+                <TabelaManager dados={dadosFiltrados} user={user} socket={socket}/>
 
                 {/* Tabela do Dashboard */}
                 <TabelaDashboard dados={usuariosLogados} />
