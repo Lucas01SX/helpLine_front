@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8004:80" # Porta externa 8004 mapeada para o NGINX no container
+      - "8002:80" # Porta externa 8004 mapeada para o NGINX no container
     volumes:
       - ./src:/app/src # Monta o diretório src para facilitar desenvolvimento
     environment:
